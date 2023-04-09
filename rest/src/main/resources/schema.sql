@@ -3,6 +3,8 @@ drop table if exists users_roles;
 drop table if exists application_user_roles;
 drop table if exists application_users;
 drop table if exists hibernate_sequence;
+drop table if exists courts;
+drop table if exists reservations;
 
 create table application_user_roles
 (
@@ -45,4 +47,25 @@ create table application_user_refresh_tokens
     token               varchar(255) not null,
     application_user_id bigint       not null,
     primary key (id)
+) engine = InnoDB;
+
+create table courts
+(
+    id                  bigint       not null,
+    court_type          varchar(255) not null,
+    primary key (id)
+) engine = InnoDB;
+
+create table reservations
+(
+    id                  bigint       not null,
+    court_type          varchar(255) not null,
+    user_id             bigint       not null,
+    court_id            bigint       not null,
+    reservation_date    date         not null,
+    start_time          time         not null,
+    end_time            time         not null,
+    primary key (id),
+    foreign key (user_id) references application_users(id),
+    foreign key (court_id) references courts(id)
 ) engine = InnoDB;

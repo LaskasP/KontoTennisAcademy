@@ -35,7 +35,6 @@ public class AppUserEntity implements Serializable {
             inverseJoinColumns = @JoinColumn(
                     name = "role_id"))
     private Set<RoleEntity> roleEntities;
-    //private Collection<String> authorities = new HashSet<>();
     private String profileImageUrl;
     private LocalDateTime lastLoginDate;
     private LocalDateTime lastLoginDateDisplay;
