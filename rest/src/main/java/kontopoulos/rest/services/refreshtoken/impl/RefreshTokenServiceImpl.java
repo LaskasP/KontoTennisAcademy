@@ -1,6 +1,5 @@
 package kontopoulos.rest.services.refreshtoken.impl;
 
-
 import kontopoulos.rest.exceptions.RefreshTokenException;
 import kontopoulos.rest.models.security.UserDetailsImpl;
 import kontopoulos.rest.models.security.entity.AppUserEntity;
@@ -15,7 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static kontopoulos.rest.models.security.SecurityConstant.JWT_REFRESH_TOKEN_EXPIRATION_MS;
@@ -28,13 +28,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public static final String REFRESH_TOKEN_WAS_EXPIRED = "Refresh token was expired.";
     public static final String REFRESH_TOKEN_NOT_FOUND = "Refresh token not found.";
     private final RefreshTokenRepository refreshTokenRepository;
-
     private final UserRepository userRepository;
-
     private final JWTProvider jwtProvider;
 
     @Override
     public JWTPairHeadersWrapper generateNewJWTTokenPair(String authorizationRefreshToken) throws RefreshTokenException {
+        log.info("Begin generateNewJWTTokenPair");
         RefreshTokenEntity refreshTokenEntity = findByToken(authorizationRefreshToken);
         JWTPairHeadersWrapper jwtPairHeadersWrapper;
         if (refreshTokenEntity != null) {
@@ -48,33 +47,38 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         } else {
             throw new RefreshTokenException(REFRESH_TOKEN_NOT_FOUND);
         }
+        log.info("End generateNewJWTTokenPair");
         return jwtPairHeadersWrapper;
+    }
+
+    @Override
+    public String createRefreshToken(String username) {
+        log.info("Begin createRefreshToken");
+        RefreshTokenEntity refreshTokenEntity = new RefreshTokenEntity();
+        refreshTokenEntity.setAppUserEntity(userRepository.findByUsername(username));
+        refreshTokenEntity.setExpiryDate(LocalDateTime.now().plus(JWT_REFRESH_TOKEN_EXPIRATION_MS, ChronoUnit.MILLIS));
+        refreshTokenEntity.setToken(UUID.randomUUID().toString());
+        refreshTokenEntity = refreshTokenRepository.save(refreshTokenEntity);
+        log.info("End createRefreshToken");
+        return refreshTokenEntity.getToken();
+    }
+
+    @Override
+    public int deleteByUserId(String username) {
+        log.info("Begin deleteByUserId");
+        log.debug("Delete refresh token for username: " + username);
+        return refreshTokenRepository.deleteByAppUserEntity(userRepository.findByUsername(username));
     }
 
     private RefreshTokenEntity findByToken(String token) {
         return refreshTokenRepository.findByToken(token);
     }
 
-    @Override
-    public String createRefreshToken(String username) {
-        RefreshTokenEntity refreshTokenEntity = new RefreshTokenEntity();
-        refreshTokenEntity.setAppUserEntity(userRepository.findByUsername(username));
-        refreshTokenEntity.setExpiryDate(new Date(new Date().getTime() + JWT_REFRESH_TOKEN_EXPIRATION_MS));
-        refreshTokenEntity.setToken(UUID.randomUUID().toString());
-        refreshTokenEntity = refreshTokenRepository.save(refreshTokenEntity);
-        return refreshTokenEntity.getToken();
-    }
-
     private RefreshTokenEntity verifyExpiration(RefreshTokenEntity token) throws RefreshTokenException {
-        if (token.getExpiryDate().compareTo(new Date()) < 0) {
+        if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
             refreshTokenRepository.delete(token);
             throw new RefreshTokenException(REFRESH_TOKEN_WAS_EXPIRED);
         }
         return token;
-    }
-
-    @Override
-    public int deleteByUserId(String username) {
-        return refreshTokenRepository.deleteByAppUserEntity(userRepository.findByUsername(username));
     }
 }

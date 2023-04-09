@@ -1,10 +1,6 @@
 package kontopoulos.rest.services.appuser.impl;
 
-
-
-import kontopoulos.rest.exceptions.AppUserNotFoundException;
 import kontopoulos.rest.exceptions.EmailExistsException;
-import kontopoulos.rest.exceptions.EmailNotFoundException;
 import kontopoulos.rest.exceptions.UsernameExistsException;
 import kontopoulos.rest.models.security.UserDetailsImpl;
 import kontopoulos.rest.models.security.entity.AppUserEntity;
@@ -31,8 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -41,10 +37,8 @@ import java.util.Set;
 @Transactional
 @Slf4j
 public class AppUserServiceImpl implements AppUserService {
-    public static final String NO_ACCOUNT_FOUND_WITH_THIS_USERNAME = "No account found with this username: ";
     public static final String ACCOUNT_ALREADY_EXISTS_WITH_USERNAME = "Account already exists with Username: ";
     public static final String ACCOUNT_ALREADY_EXISTS_WITH_EMAIL = "Account already exists with Email: ";
-    public static final String NO_ACCOUNT_FOUND_WITH_THIS_EMAIL = "No account found with this email:";
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
@@ -54,110 +48,95 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public RegisterResponseWrapper registerAppUser(RegisterRequest registerRequest) throws UsernameExistsException, EmailExistsException {
-        log.info("registerAppUser");
+        log.info("Begin registerAppUser");
         log.debug("Begin Saving appUserRequest with username: " + registerRequest.getUsername());
-        validateNewUsernameAndEmail(registerRequest.getUsername(), registerRequest.getEmail());
-        AppUserEntity newAppUserEntity = modelMapper.map(registerRequest, AppUserEntity.class);
-        newAppUserEntity.setRoleEntities(Set.of(roleRepository.findFirstByAppUserRole(AppUserRole.ROLE_USER)));
-        newAppUserEntity.setJoinDate(new Date());
-        newAppUserEntity.setActive(true);
-        newAppUserEntity.setNotLocked(true);
-        newAppUserEntity.setPassword(getEncodedPassword(registerRequest.getPassword()));
-        newAppUserEntity.setProfileImageUrl(getTempImg());
-        log.debug("End Saved newAppUser with username: " + newAppUserEntity.getUsername());
-        //return modelMapper.map(userRepository.save(newAppUserEntity), RegisterResponse.class);
+        validateNewUsernameAndEmailDoesNotExist(registerRequest.getUsername(), registerRequest.getEmail());
+        AppUserEntity newAppUserEntity = createNewAppUserEntity(registerRequest);
         UserDetailsImpl userDetails = new UserDetailsImpl(newAppUserEntity);
         String httpHeader = jwtProvider.generateJWT(userDetails);
         RegisterResponse registerResponse = modelMapper.map(userRepository.save(newAppUserEntity), RegisterResponse.class);
-        List<AppUserRole> roles = new ArrayList<>();
-        for (RoleEntity roleEntity : newAppUserEntity.getRoleEntities()) {
-            roles.add(roleEntity.getAppUserRole());
-        }
+        List<AppUserRole> roles = extractAppUserRoles(newAppUserEntity);
         registerResponse.setRoles(roles);
+        log.debug("End Saved newAppUser with username: " + newAppUserEntity.getUsername());
+        log.info("End registerAppUser");
         return new RegisterResponseWrapper(httpHeader, registerResponse);
     }
 
-    private String getTempImg() {
-        return ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/image/temp").toUriString();
+    @Override
+    public LoginResponseWrapper loginAppUser(LoginRequest loginRequest) {
+        log.info("Begin loginAppUser");
+        authenticate(loginRequest.getUsername(), loginRequest.getPassword());
+        AppUserEntity appUserEntity = getAppUserByUsername(loginRequest.getUsername());
+        UserDetailsImpl userDetails = new UserDetailsImpl(appUserEntity);
+        String httpHeader = jwtProvider.generateJWT(userDetails);
+        LoginResponse loginResponse = modelMapper.map(appUserEntity, LoginResponse.class);
+        List<AppUserRole> roles = extractAppUserRoles(appUserEntity);
+        loginResponse.setRoles(roles);
+        log.info("End loginAppUser");
+        return new LoginResponseWrapper(httpHeader, loginResponse);
     }
 
+    @Override
     public void changePassword(ChangePasswordRequest changePasswordRequest) {
+        log.info("Begin changePassword");
         authenticate(changePasswordRequest.getUsername(), changePasswordRequest.getPassword());
         AppUserEntity appUserEntity = getAppUserByUsername(changePasswordRequest.getUsername());
         if (appUserEntity != null) {
             appUserEntity.setPassword(getEncodedPassword(changePasswordRequest.getNewPassword()));
             userRepository.save(appUserEntity);
         }
+        log.info("End changePassword");
     }
 
-    @Override
-    public LoginResponseWrapper loginAppUser(LoginRequest loginRequest) {
-        authenticate(loginRequest.getUsername(), loginRequest.getPassword());
-        AppUserEntity appUserEntity = getAppUserByUsername(loginRequest.getUsername());
-        UserDetailsImpl userDetails = new UserDetailsImpl(appUserEntity);
-        String httpHeader = jwtProvider.generateJWT(userDetails);
-        LoginResponse loginResponse = modelMapper.map(appUserEntity, LoginResponse.class);
+    private static List<AppUserRole> extractAppUserRoles(AppUserEntity appUserEntity) {
         List<AppUserRole> roles = new ArrayList<>();
         for (RoleEntity roleEntity : appUserEntity.getRoleEntities()) {
             roles.add(roleEntity.getAppUserRole());
         }
-        loginResponse.setRoles(roles);
-        return new LoginResponseWrapper(httpHeader, loginResponse);
+        return roles;
     }
 
-    @Override
-    public void givePremRole(String username) {
-        AppUserEntity appUserEntity = getAppUserByUsername(username);
-        appUserEntity.addRole(roleRepository.findFirstByAppUserRole(AppUserRole.ROLE_PREMIUM_USER));
-        userRepository.save(appUserEntity);
+    private AppUserEntity createNewAppUserEntity(RegisterRequest registerRequest) {
+        AppUserEntity newAppUserEntity = modelMapper.map(registerRequest, AppUserEntity.class);
+        newAppUserEntity.setRoleEntities(Set.of(roleRepository.findFirstByAppUserRole(AppUserRole.ROLE_USER)));
+        newAppUserEntity.setJoinDate(LocalDateTime.now());
+        newAppUserEntity.setActive(true);
+        newAppUserEntity.setNotLocked(true);
+        newAppUserEntity.setPassword(getEncodedPassword(registerRequest.getPassword()));
+        newAppUserEntity.setProfileImageUrl(getTempImg());
+        return newAppUserEntity;
+    }
+
+    private String getTempImg() {
+        return ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/image/temp").toUriString();
     }
 
     private String getEncodedPassword(String password) {
         return passwordEncoder.encode(password);
     }
 
-    private void validateChangeOfUsername(String currentUsername, String newUsername) throws UsernameExistsException, AppUserNotFoundException {
-        AppUserEntity appUserEntityByUsername = getAppUserByUsername(currentUsername);
-        if (appUserEntityByUsername == null) {
-            throw new AppUserNotFoundException(NO_ACCOUNT_FOUND_WITH_THIS_USERNAME + currentUsername);
+    private void validateNewUsernameAndEmailDoesNotExist(String newUsername, String newEmail) throws UsernameExistsException, EmailExistsException {
+        if (newUsername != null) {
+            AppUserEntity appUserEntityByNewUsername = getAppUserByUsername(newUsername);
+            if (appUserEntityByNewUsername != null) {
+                throw new UsernameExistsException(ACCOUNT_ALREADY_EXISTS_WITH_USERNAME + newUsername);
+            }
         }
-        if (getAppUserByUsername(newUsername) != null) {
-            throw new UsernameExistsException(ACCOUNT_ALREADY_EXISTS_WITH_USERNAME + newUsername);
-        }
-        appUserEntityByUsername.setUsername(newUsername);
-        userRepository.save(appUserEntityByUsername);
-    }
-
-    private void validateNewUsernameAndEmail(String newUsername, String newEmail) throws UsernameExistsException, EmailExistsException {
-        AppUserEntity appUserEntityByNewUsername = getAppUserByUsername(newUsername);
-        if (appUserEntityByNewUsername != null) {
-            throw new UsernameExistsException(ACCOUNT_ALREADY_EXISTS_WITH_USERNAME + newUsername);
-        }
-        AppUserEntity appUserEntityByNewEmail = getAppUserByEmail(newEmail);
-        if (appUserEntityByNewEmail != null) {
-            throw new EmailExistsException(ACCOUNT_ALREADY_EXISTS_WITH_EMAIL + newEmail);
+        if (newEmail != null) {
+            AppUserEntity appUserEntityByNewEmail = getAppUserByEmail(newEmail);
+            if (appUserEntityByNewEmail != null) {
+                throw new EmailExistsException(ACCOUNT_ALREADY_EXISTS_WITH_EMAIL + newEmail);
+            }
         }
     }
 
-    private void validateCurrentUsername(String username, String email) throws AppUserNotFoundException, EmailNotFoundException {
-        if (getAppUserByUsername(username) == null) {
-            throw new AppUserNotFoundException(NO_ACCOUNT_FOUND_WITH_THIS_USERNAME + username);
-        }
-        if (getAppUserByEmail(email) == null) {
-            throw new EmailNotFoundException(NO_ACCOUNT_FOUND_WITH_THIS_EMAIL + email);
-        }
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public AppUserEntity getAppUserByUsername(String username) {
-        log.info("Get user with username: " + username);
+    private AppUserEntity getAppUserByUsername(String username) {
+        log.debug("Get user with username: " + username);
         return userRepository.findByUsername(username);
     }
 
-    @Override
-    public AppUserEntity getAppUserByEmail(String email) {
-        log.info("Get user with username: " + email);
+    private AppUserEntity getAppUserByEmail(String email) {
+        log.debug("Get user with username: " + email);
         return userRepository.findByEmail(email);
     }
 

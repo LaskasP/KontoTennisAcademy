@@ -27,28 +27,32 @@ public class AuthController {
 
     public static final String REFRESH_TOKEN_CANNOT_BE_NULL = "Refresh token cannot be null.";
     public static final String USERNAME_CANNOT_BE_NULL = "Username cannot be null.";
+    public static final String REGISTRATION = "/registration";
+    public static final String LOGIN = "/login";
+    public static final String REFRESHMENT = "/refreshment";
+    public static final String LOGOUT = "/logout";
     private AppUserService appUserService;
     private RefreshTokenService refreshTokenService;
 
-    @PostMapping("/registration")
+    @PostMapping(REGISTRATION)
     public ResponseEntity<RegisterResponse> signUpAppUser(@Valid @RequestBody RegisterRequest registerRequest) throws UsernameExistsException, EmailExistsException {
         RegisterResponseWrapper registerResponseWrapper = appUserService.registerAppUser(registerRequest);
         return ResponseEntity.status(HttpStatus.CREATED).header(AUTHORIZATION, registerResponseWrapper.getHttpHeader()).header(REFRESH_AUTHORIZATION_HEADER, refreshTokenService.createRefreshToken(registerRequest.getUsername())).body(registerResponseWrapper.getRegisterResponse());
     }
 
-    @PostMapping("/login")
+    @PostMapping(LOGIN)
     public ResponseEntity<LoginResponse> loginAppUser(@Valid @RequestBody LoginRequest loginRequest) {
         LoginResponseWrapper loginResponseWrapper = appUserService.loginAppUser(loginRequest);
         return ResponseEntity.ok().header(AUTHORIZATION, loginResponseWrapper.getHttpHeader()).header(REFRESH_AUTHORIZATION_HEADER, refreshTokenService.createRefreshToken(loginRequest.getUsername())).body(loginResponseWrapper.getLoginResponse());
     }
 
-    @GetMapping("/refreshment")
+    @GetMapping(REFRESHMENT)
     public ResponseEntity<Void> refreshToken(@RequestHeader(REFRESH_AUTHORIZATION_HEADER) @NotBlank(message = REFRESH_TOKEN_CANNOT_BE_NULL) String authorizationRefreshToken) throws RefreshTokenException {
         JWTPairHeadersWrapper jwtPairHeadersWrapper = refreshTokenService.generateNewJWTTokenPair(authorizationRefreshToken);
         return ResponseEntity.ok().header(AUTHORIZATION, jwtPairHeadersWrapper.getAccessToken()).header(REFRESH_AUTHORIZATION_HEADER, jwtPairHeadersWrapper.getRefreshToken()).build();
     }
 
-    @GetMapping("/logout")
+    @GetMapping(LOGOUT)
     public ResponseEntity<Void> signOutAppUser(@RequestParam @NotBlank(message = USERNAME_CANNOT_BE_NULL) String username) {
         refreshTokenService.deleteByUserId(username);
         return ResponseEntity.ok().build();

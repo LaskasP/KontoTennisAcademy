@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Service
@@ -31,9 +31,9 @@ public class UserDetailServiceImpl implements UserDetailsService {
         }
         validateLoginAttempts(appUserEntity);
         appUserEntity.setLastLoginDateDisplay(appUserEntity.getLastLoginDate());
-        appUserEntity.setLastLoginDate(new Date());
+        appUserEntity.setLastLoginDate(LocalDateTime.now());
         userRepository.save(appUserEntity);
-        log.info("User returned with username: " + username);
+        log.debug("User returned with username: " + username);
         return new UserDetailsImpl(appUserEntity);
     }
 

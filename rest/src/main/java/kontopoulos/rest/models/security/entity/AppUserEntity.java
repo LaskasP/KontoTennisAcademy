@@ -1,14 +1,11 @@
 package kontopoulos.rest.models.security.entity;
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 
@@ -27,14 +24,8 @@ public class AppUserEntity implements Serializable {
     private String userId;
     private String firstName;
     private String lastName;
-    @NotBlank
-    @Size(max = 25)
     private String username;
-    @NotBlank
-    @Size(max = 60)
     private String email;
-    @NotBlank
-    @Size(max = 200)
     private String password;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -46,9 +37,9 @@ public class AppUserEntity implements Serializable {
     private Set<RoleEntity> roleEntities;
     //private Collection<String> authorities = new HashSet<>();
     private String profileImageUrl;
-    private Date lastLoginDate;
-    private Date lastLoginDateDisplay;
-    private Date joinDate;
+    private LocalDateTime lastLoginDate;
+    private LocalDateTime lastLoginDateDisplay;
+    private LocalDateTime joinDate;
     private boolean isActive;
     private boolean isNotLocked;
 

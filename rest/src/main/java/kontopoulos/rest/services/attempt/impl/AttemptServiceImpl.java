@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import kontopoulos.rest.services.attempt.AttemptService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutionException;
@@ -11,6 +12,7 @@ import java.util.concurrent.ExecutionException;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Service
+@Slf4j
 public class AttemptServiceImpl implements AttemptService {
     public static final int MAXIMUM_USER_SIZE = 200;
     public static final int ATTEMPT_INIT = 0;
@@ -24,7 +26,7 @@ public class AttemptServiceImpl implements AttemptService {
         this.attemptCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(EXPIRATION_TIME_IN_MINUTES, MINUTES)
                 .maximumSize(MAXIMUM_USER_SIZE)
-                .build(new CacheLoader<String, Integer>() {
+                .build(new CacheLoader<>() {
                     @Override
                     public Integer load(String key) {
                         return ATTEMPT_INIT;
@@ -33,15 +35,18 @@ public class AttemptServiceImpl implements AttemptService {
     }
 
     public void addAppUserToAttemptCache(String username) {
+        log.debug("Begin addAppUserToAttemptCache");
         try {
             attemptCache.put(username, attemptCache.get(username) + ATTEMPT_INCREMENT);
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+        log.debug("Username: " + username + " inserted to cache");
     }
 
     public void evictAppUserFromAttemptCache(String username) {
         attemptCache.invalidate(username);
+        log.debug("Username: " + username + " evicted from cache");
     }
 
     public boolean hasExceededMaxAttempts(String username) {

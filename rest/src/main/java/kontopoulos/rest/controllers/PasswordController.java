@@ -19,16 +19,18 @@ import org.springframework.web.bind.annotation.*;
 public class PasswordController {
     public static final String PROVIDE_A_VALID_EMAIL_ADDRESS = "Provide a valid Email address";
     public static final String EMAIL_CANNOT_BE_NULL = "Email cannot be null";
+    public static final String RESET = "/reset";
+    public static final String CHANGE = "/change";
     private EmailService emailService;
 
     private AppUserService appUserService;
 
-    @GetMapping("/reset")
+    @GetMapping(RESET)
     public void resetPassword(@RequestParam @Email(message = PROVIDE_A_VALID_EMAIL_ADDRESS) @NotBlank(message = EMAIL_CANNOT_BE_NULL) String email) throws AppUserNotFoundException {
         emailService.sendResetPasswordMail(email);
     }
 
-    @PutMapping("/change")
+    @PutMapping(CHANGE)
     public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         appUserService.changePassword(changePasswordRequest);
         return ResponseEntity.noContent().build();

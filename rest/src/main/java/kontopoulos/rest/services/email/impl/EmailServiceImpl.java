@@ -1,6 +1,5 @@
 package kontopoulos.rest.services.email.impl;
 
-
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import kontopoulos.rest.exceptions.AppUserNotFoundException;
@@ -27,24 +26,17 @@ public class EmailServiceImpl implements EmailService {
     @Value("${spring.mail.username}")
     private String sender;
 
-    private MimeMessage createEmail(String username, String email, String url) throws MessagingException {
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
-        mimeMessageHelper.setFrom(sender);
-        mimeMessageHelper.setTo(email);
-        mimeMessageHelper.setText("Greetings BoredGamer, " + username + BREAK_LINE + "Forgot your password? No problem, just use the link below to reset it" + BREAK_LINE + url + BREAK_LINE + "Happy BoredGaming!");
-        mimeMessageHelper.setSubject(EMAIL_SUBJECT);
-        return mimeMessage;
-    }
-
     @Override
     public void sendResetPasswordMail(String email) throws AppUserNotFoundException {
+        log.info("Begin sendResetPasswordMail");
         String username = retrieveUsername(email);
         try {
             javaMailSender.send(createEmail(username, email, "https://maximosstratis.github.io/sofoulakos/"));
+            log.debug("Email send to " + email);
         } catch (MessagingException e) {
-            log.error("Error while sending mail!!!");
+            log.error("Error while sending mail!");
         }
+        log.info("End sendResetPasswordMail");
     }
 
     private String retrieveUsername(String email) throws AppUserNotFoundException {
@@ -53,5 +45,15 @@ public class EmailServiceImpl implements EmailService {
             throw new AppUserNotFoundException("User doesn't exist with email: " + email);
         }
         return appUserEntity.getUsername();
+    }
+
+    private MimeMessage createEmail(String username, String email, String url) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        mimeMessageHelper.setFrom(sender);
+        mimeMessageHelper.setTo(email);
+        mimeMessageHelper.setText("Greetings  " + username + BREAK_LINE + "Forgot your password? No problem, it's happening to us every day. Just use the link below to reset it" + BREAK_LINE + url + BREAK_LINE + "Happy BoredGaming!");
+        mimeMessageHelper.setSubject(EMAIL_SUBJECT);
+        return mimeMessage;
     }
 }

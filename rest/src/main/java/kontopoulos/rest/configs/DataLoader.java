@@ -35,15 +35,13 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         }
         RoleEntity userRole = createRoleIfNotFound(AppUserRole.ROLE_USER);
         RoleEntity adminRole = createRoleIfNotFound(AppUserRole.ROLE_ADMIN);
-        RoleEntity premiumUserRole = createRoleIfNotFound(AppUserRole.ROLE_PREMIUM_USER);
-        RoleEntity superUserRole = createRoleIfNotFound(AppUserRole.ROLE_SUPER);
         AppUserEntity user = new AppUserEntity();
         user.setFirstName("Fanis");
         user.setLastName("Kontopoulos");
         user.setUsername("FanisKonto");
         user.setPassword(passwordEncoder.encode("IRullzU!"));
         user.setEmail("fanis@kontopoulosacademy.com");
-        user.setRoleEntities(Set.of(userRole, adminRole, premiumUserRole, superUserRole));
+        user.setRoleEntities(Set.of(userRole, adminRole));
         user.setActive(true);
         user.setNotLocked(false);
         userRepository.save(user);

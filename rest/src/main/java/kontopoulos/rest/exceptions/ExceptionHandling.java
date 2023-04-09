@@ -16,8 +16,8 @@ import org.springframework.web.context.request.WebRequest;
 
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -28,25 +28,25 @@ public class ExceptionHandling {
     public ResponseEntity<ErrorMessage> globalExceptionHandler(Exception ex, WebRequest request) {
         log.error(ex.getClass().toString());
         log.error(ex.getMessage());
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), new Date(), List.of("Generic Application Exception"), request.getDescription(false)), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), LocalDateTime.now(), List.of("Generic Application Exception"), request.getDescription(false)), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ErrorMessage> missingRequestHeaderExceptionHandler(MissingRequestHeaderException ex, WebRequest request) {
         log.error(ex.getMessage());
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), LocalDateTime.now(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorMessage> constrainViolationExceptionHandler(ConstraintViolationException ex, WebRequest request) {
         log.error(ex.getMessage());
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), LocalDateTime.now(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(RefreshTokenException.class)
     public ResponseEntity<ErrorMessage> RefreshTokenExpiredExceptionHandler(RefreshTokenException ex, WebRequest request) {
         log.error(ex.getMessage());
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.FORBIDDEN.value(), new Date(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.FORBIDDEN.value(), LocalDateTime.now(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -57,41 +57,41 @@ public class ExceptionHandling {
         for (ObjectError error : errorList) {
             errorMessages.add(error.getDefaultMessage());
         }
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), errorMessages, request.getDescription(false)), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), LocalDateTime.now(), errorMessages, request.getDescription(false)), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorMessage> badCredentialsExceptionHandler(BadCredentialsException ex, WebRequest request) {
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), LocalDateTime.now(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorMessage> accessDeniedExceptionHandler(AccessDeniedException ex, WebRequest request) {
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.FORBIDDEN.value(), new Date(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.FORBIDDEN.value(), LocalDateTime.now(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<ErrorMessage> expiredJwtExceptionHandler(ExpiredJwtException ex, WebRequest request) {
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.UNAUTHORIZED.value(), new Date(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.UNAUTHORIZED.value(), LocalDateTime.now(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(LockedException.class)
     public ResponseEntity<ErrorMessage> lockedExceptionHandler(LockedException ex, WebRequest request) {
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.UNAUTHORIZED.value(), new Date(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.UNAUTHORIZED.value(), LocalDateTime.now(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler({EmailExistsException.class, EmailNotFoundException.class})
     public ResponseEntity<ErrorMessage> emailExceptionHandler(Exception ex, WebRequest request) {
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), LocalDateTime.now(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({UsernameExistsException.class, AppUserNotFoundException.class})
     public ResponseEntity<ErrorMessage> appUserExceptionHandler(Exception ex, WebRequest request) {
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), LocalDateTime.now(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({ResourceNotFoundException.class})
     public ResponseEntity<ErrorMessage> resourceNotFoundExceptionHandler(ResourceNotFoundException ex, WebRequest request) {
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.NOT_FOUND.value(), new Date(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.NOT_FOUND.value(), LocalDateTime.now(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.NOT_FOUND);
     }
 }

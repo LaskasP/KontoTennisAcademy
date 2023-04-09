@@ -2,13 +2,13 @@ package kontopoulos.rest.exceptions;
 
 import lombok.AllArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
 public class ErrorMessage {
     private int statusCode;
-    private Date timestamp;
+    private LocalDateTime timestamp;
     private List<String> messages;
     private String description;
 
@@ -16,7 +16,7 @@ public class ErrorMessage {
         return statusCode;
     }
 
-    public Date getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 

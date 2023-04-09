@@ -3,8 +3,7 @@ package kontopoulos.rest.models.security.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity(name = "application_user_refresh_tokens")
 @Getter
@@ -23,5 +22,5 @@ public class RefreshTokenEntity {
     @Column(nullable = false, unique = true)
     private String token;
     @Column(nullable = false)
-    private Date expiryDate;
+    private LocalDateTime expiryDate;
 }

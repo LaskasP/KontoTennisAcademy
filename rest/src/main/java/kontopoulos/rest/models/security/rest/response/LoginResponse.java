@@ -4,6 +4,7 @@ package kontopoulos.rest.models.security.rest.response;
 
 import kontopoulos.rest.models.security.lov.AppUserRole;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -13,9 +14,9 @@ public class LoginResponse {
     private String email;
     private List<AppUserRole> roles;
     private String profileImageUrl;
-    private Date lastLoginDate;
-    private Date lastLoginDateDisplay;
-    private Date joinDate;
+    private LocalDateTime lastLoginDate;
+    private LocalDateTime lastLoginDateDisplay;
+    private LocalDateTime joinDate;
 
     public String getUserId() {
         return userId;
@@ -57,27 +58,27 @@ public class LoginResponse {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public Date getLastLoginDate() {
+    public LocalDateTime getLastLoginDate() {
         return lastLoginDate;
     }
 
-    public void setLastLoginDate(Date lastLoginDate) {
+    public void setLastLoginDate(LocalDateTime lastLoginDate) {
         this.lastLoginDate = lastLoginDate;
     }
 
-    public Date getLastLoginDateDisplay() {
+    public LocalDateTime getLastLoginDateDisplay() {
         return lastLoginDateDisplay;
     }
 
-    public void setLastLoginDateDisplay(Date lastLoginDateDisplay) {
+    public void setLastLoginDateDisplay(LocalDateTime lastLoginDateDisplay) {
         this.lastLoginDateDisplay = lastLoginDateDisplay;
     }
 
-    public Date getJoinDate() {
+    public LocalDateTime getJoinDate() {
         return joinDate;
     }
 
-    public void setJoinDate(Date joinDate) {
+    public void setJoinDate(LocalDateTime joinDate) {
         this.joinDate = joinDate;
     }
 }
