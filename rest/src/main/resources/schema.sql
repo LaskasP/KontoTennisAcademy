@@ -1,10 +1,11 @@
 drop table if exists application_user_refresh_tokens;
 drop table if exists users_roles;
+drop table if exists reservations;
 drop table if exists application_user_roles;
 drop table if exists application_users;
 drop table if exists hibernate_sequence;
 drop table if exists courts;
-drop table if exists reservations;
+
 
 create table application_user_roles
 (

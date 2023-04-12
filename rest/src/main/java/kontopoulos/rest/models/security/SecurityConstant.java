@@ -12,6 +12,6 @@ public class SecurityConstant {
     public static final String FORBIDDEN_MESSAGE = "You need to login first";
     public static final String ACCESS_DENIED_MESSAGE = "You do not have permission to access this resource";
     public static final String OPTIONS_HTTP_METHOD = "OPTIONS";
-    public static final String[] PUBLIC_URLS = {"/auth/login", "/auth/register", "/auth/refresh-token", "/password/reset", "/user/image/**", "/error", "/api-docs/**", "/swagger-ui/**"};
+    public static final String[] PUBLIC_URLS = {"/auth/login", "/auth/registration", "/auth/refreshment", "/password/reset", "/user/image/**", "/error", "/api-docs/**", "/swagger-ui/**"};
     public static final String REFRESH_AUTHORIZATION_HEADER = "Authorization-Refresh";
 }

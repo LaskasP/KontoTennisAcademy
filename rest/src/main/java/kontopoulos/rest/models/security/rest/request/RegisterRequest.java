@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-
 @Data
 public class RegisterRequest {
     @NotBlank(message = "firstName cannot be blank.")
@@ -20,7 +19,7 @@ public class RegisterRequest {
     @NotBlank(message = "password must be greater than 6 characters long.")
     @Size(min = 6, max = 200)
     private String password;
-    @NotBlank(message = "Email cannot be blank.")
+    @NotBlank(message = "email cannot be blank.")
     @Size(max = 60)
     @Email
     private String email;
