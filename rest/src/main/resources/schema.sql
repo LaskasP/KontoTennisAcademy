@@ -1,7 +1,8 @@
 drop table if exists application_user_refresh_tokens;
 drop table if exists users_roles;
-drop table if exists reservations;
+drop table if exists reservations_time_intervals;
 drop table if exists time_intervals;
+drop table if exists reservations;
 drop table if exists application_user_roles;
 drop table if exists application_users;
 drop table if exists hibernate_sequence;
@@ -13,7 +14,7 @@ create table application_user_roles
     id            bigint not null,
     app_user_role varchar(20),
     primary key (id)
-)
+);
 
 create table application_users
 (
@@ -31,7 +32,7 @@ create table application_users
     user_id                 varchar(255),
     username                varchar(25),
     primary key (id)
-)
+);
 
 create index application_user_index on application_users (username);
 
@@ -40,7 +41,7 @@ create table users_roles
     user_id bigint not null,
     role_id bigint not null,
     primary key (user_id, role_id)
-)
+);
 
 create table application_user_refresh_tokens
 (
@@ -49,26 +50,25 @@ create table application_user_refresh_tokens
     token               varchar(255) not null,
     application_user_id bigint       not null,
     primary key (id)
-)
+);
 
 create table courts
 (
-    id                  bigint       not null,
-    court_type          varchar(255) not null,
+    id         bigint       not null,
+    court_type varchar(255) not null,
     primary key (id)
-)
+);
 
 create table reservations
 (
-    id                  bigint       not null,
-    court_type          varchar(255) not null,
-    user_id             bigint       not null,
-    court_id            bigint       not null,
-    reservation_date    date         not null,
+    id               bigint not null,
+    user_id          bigint not null,
+    court_id         bigint not null,
+    reservation_date date   not null,
     primary key (id),
-    foreign key (user_id) references application_users(id),
-    foreign key (court_id) references courts(id)
-)
+    foreign key (user_id) references application_users (id),
+    foreign key (court_id) references courts (id)
+);
 
 -- create table unavailability
 -- (
@@ -82,16 +82,18 @@ create table reservations
 --     foreign key (court_id) references courts(id)
 -- )
 
-create table time_intervals(
-    id                  bigint       not null,
-    time_value          time         not null
-)
+create table time_intervals
+(
+    id         bigint not null,
+    time_value time   not null,
+    primary key (id)
+);
 
-
-CREATE TABLE reservations_time_intervals (
-    reservation_id INT,
-    time_interval_id INT,
+CREATE TABLE reservations_time_intervals
+(
+    reservation_id   bigint,
+    time_interval_id bigint,
     PRIMARY KEY (reservation_id, time_interval_id),
-    FOREIGN KEY (reservation_id) REFERENCES reservations(id) ON DELETE CASCADE,
-    FOREIGN KEY (time_interval_id) REFERENCES time_intervals(id) ON DELETE CASCADE
+    FOREIGN KEY (reservation_id) REFERENCES reservations (id) ON DELETE CASCADE,
+    FOREIGN KEY (time_interval_id) REFERENCES time_intervals (id) ON DELETE CASCADE
 );
