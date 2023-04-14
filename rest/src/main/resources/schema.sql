@@ -1,6 +1,7 @@
 drop table if exists application_user_refresh_tokens;
 drop table if exists users_roles;
 drop table if exists reservations;
+drop table if exists time_intervals;
 drop table if exists application_user_roles;
 drop table if exists application_users;
 drop table if exists hibernate_sequence;
@@ -12,7 +13,7 @@ create table application_user_roles
     id            bigint not null,
     app_user_role varchar(20),
     primary key (id)
-) engine = InnoDB;
+)
 
 create table application_users
 (
@@ -30,7 +31,7 @@ create table application_users
     user_id                 varchar(255),
     username                varchar(25),
     primary key (id)
-) engine = InnoDB;
+)
 
 create index application_user_index on application_users (username);
 
@@ -39,7 +40,7 @@ create table users_roles
     user_id bigint not null,
     role_id bigint not null,
     primary key (user_id, role_id)
-) engine = InnoDB;
+)
 
 create table application_user_refresh_tokens
 (
@@ -48,14 +49,14 @@ create table application_user_refresh_tokens
     token               varchar(255) not null,
     application_user_id bigint       not null,
     primary key (id)
-) engine = InnoDB;
+)
 
 create table courts
 (
     id                  bigint       not null,
     court_type          varchar(255) not null,
     primary key (id)
-) engine = InnoDB;
+)
 
 create table reservations
 (
@@ -64,9 +65,33 @@ create table reservations
     user_id             bigint       not null,
     court_id            bigint       not null,
     reservation_date    date         not null,
-    start_time          time         not null,
-    end_time            time         not null,
     primary key (id),
     foreign key (user_id) references application_users(id),
     foreign key (court_id) references courts(id)
-) engine = InnoDB;
+)
+
+-- create table unavailability
+-- (
+--     id                  bigint       not null,
+--     day                 date         not null,
+--     is_work_day         bit          not null,
+--     start_time          time,
+--     end_time            time,
+--     primary key (day),
+--     foreign key (user_id) references application_users(id),
+--     foreign key (court_id) references courts(id)
+-- )
+
+create table time_intervals(
+    id                  bigint       not null,
+    time_value          time         not null
+)
+
+
+CREATE TABLE reservations_time_intervals (
+    reservation_id INT,
+    time_interval_id INT,
+    PRIMARY KEY (reservation_id, time_interval_id),
+    FOREIGN KEY (reservation_id) REFERENCES reservations(id) ON DELETE CASCADE,
+    FOREIGN KEY (time_interval_id) REFERENCES time_intervals(id) ON DELETE CASCADE
+);
