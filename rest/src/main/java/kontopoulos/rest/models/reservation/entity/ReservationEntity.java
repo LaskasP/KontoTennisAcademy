@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import kontopoulos.rest.models.common.TimeIntervalEntity;
 import kontopoulos.rest.models.security.entity.AppUserEntity;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "reservations")
 public class ReservationEntity {
 

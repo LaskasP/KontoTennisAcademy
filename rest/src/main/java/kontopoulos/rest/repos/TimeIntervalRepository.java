@@ -2,12 +2,14 @@ package kontopoulos.rest.repos;
 
 import kontopoulos.rest.models.common.TimeIntervalEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalTime;
+import java.util.Set;
 
 @Repository
 public interface TimeIntervalRepository extends JpaRepository<TimeIntervalEntity, Long> {
-    public List<TimeIntervalEntity> findAllByTimeValueBetween(LocalDate startTime, LocalDate endTime);
+    @Query("select t from TimeIntervalEntity t where t.timeValue >= :startTime and t.timeValue <= :endTime")
+    public Set<TimeIntervalEntity> findAllByTimeValueIsBetweenStartTimeAndEndTime(LocalTime startTime, LocalTime endTime);
 }
