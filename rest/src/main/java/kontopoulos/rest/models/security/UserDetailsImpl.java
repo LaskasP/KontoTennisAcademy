@@ -26,7 +26,7 @@ public class UserDetailsImpl implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (RoleEntity roleEntity : appUserEntity.getRoleEntities()) {
-            authorities.add(new SimpleGrantedAuthority(roleEntity.getAppUserRole().toString()));
+            authorities.add(new SimpleGrantedAuthority(roleEntity.getAppUserRoleEnum().toString()));
         }
         return authorities;
     }

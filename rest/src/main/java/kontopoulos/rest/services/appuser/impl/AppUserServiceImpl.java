@@ -5,7 +5,7 @@ import kontopoulos.rest.exceptions.UsernameExistsException;
 import kontopoulos.rest.models.security.UserDetailsImpl;
 import kontopoulos.rest.models.security.entity.AppUserEntity;
 import kontopoulos.rest.models.security.entity.RoleEntity;
-import kontopoulos.rest.models.security.lov.AppUserRole;
+import kontopoulos.rest.models.security.lov.AppUserRoleEnum;
 import kontopoulos.rest.models.security.rest.request.ChangePasswordRequest;
 import kontopoulos.rest.models.security.rest.request.LoginRequest;
 import kontopoulos.rest.models.security.rest.request.RegisterRequest;
@@ -13,8 +13,8 @@ import kontopoulos.rest.models.security.rest.response.LoginResponse;
 import kontopoulos.rest.models.security.rest.response.LoginResponseWrapper;
 import kontopoulos.rest.models.security.rest.response.RegisterResponse;
 import kontopoulos.rest.models.security.rest.response.RegisterResponseWrapper;
+import kontopoulos.rest.repos.AppUserRepository;
 import kontopoulos.rest.repos.RoleRepository;
-import kontopoulos.rest.repos.UserRepository;
 import kontopoulos.rest.services.appuser.AppUserService;
 import kontopoulos.rest.utils.JWTProvider;
 import lombok.AllArgsConstructor;
@@ -39,7 +39,7 @@ import java.util.Set;
 public class AppUserServiceImpl implements AppUserService {
     public static final String ACCOUNT_ALREADY_EXISTS_WITH_USERNAME = "Account already exists with Username: ";
     public static final String ACCOUNT_ALREADY_EXISTS_WITH_EMAIL = "Account already exists with Email: ";
-    private final UserRepository userRepository;
+    private final AppUserRepository appUserRepository;
     private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
@@ -54,8 +54,8 @@ public class AppUserServiceImpl implements AppUserService {
         AppUserEntity newAppUserEntity = createNewAppUserEntity(registerRequest);
         UserDetailsImpl userDetails = new UserDetailsImpl(newAppUserEntity);
         String httpHeader = jwtProvider.generateJWT(userDetails);
-        RegisterResponse registerResponse = modelMapper.map(userRepository.save(newAppUserEntity), RegisterResponse.class);
-        List<AppUserRole> roles = extractAppUserRoles(newAppUserEntity);
+        RegisterResponse registerResponse = modelMapper.map(appUserRepository.save(newAppUserEntity), RegisterResponse.class);
+        List<AppUserRoleEnum> roles = extractAppUserRoles(newAppUserEntity);
         registerResponse.setRoles(roles);
         log.debug("End Saved newAppUser with username: " + newAppUserEntity.getUsername());
         log.info("End registerAppUser");
@@ -70,7 +70,7 @@ public class AppUserServiceImpl implements AppUserService {
         UserDetailsImpl userDetails = new UserDetailsImpl(appUserEntity);
         String httpHeader = jwtProvider.generateJWT(userDetails);
         LoginResponse loginResponse = modelMapper.map(appUserEntity, LoginResponse.class);
-        List<AppUserRole> roles = extractAppUserRoles(appUserEntity);
+        List<AppUserRoleEnum> roles = extractAppUserRoles(appUserEntity);
         loginResponse.setRoles(roles);
         log.info("End loginAppUser");
         return new LoginResponseWrapper(httpHeader, loginResponse);
@@ -83,22 +83,22 @@ public class AppUserServiceImpl implements AppUserService {
         AppUserEntity appUserEntity = getAppUserByUsername(changePasswordRequest.getUsername());
         if (appUserEntity != null) {
             appUserEntity.setPassword(getEncodedPassword(changePasswordRequest.getNewPassword()));
-            userRepository.save(appUserEntity);
+            appUserRepository.save(appUserEntity);
         }
         log.info("End changePassword");
     }
 
-    private static List<AppUserRole> extractAppUserRoles(AppUserEntity appUserEntity) {
-        List<AppUserRole> roles = new ArrayList<>();
+    private static List<AppUserRoleEnum> extractAppUserRoles(AppUserEntity appUserEntity) {
+        List<AppUserRoleEnum> roles = new ArrayList<>();
         for (RoleEntity roleEntity : appUserEntity.getRoleEntities()) {
-            roles.add(roleEntity.getAppUserRole());
+            roles.add(roleEntity.getAppUserRoleEnum());
         }
         return roles;
     }
 
     private AppUserEntity createNewAppUserEntity(RegisterRequest registerRequest) {
         AppUserEntity newAppUserEntity = modelMapper.map(registerRequest, AppUserEntity.class);
-        newAppUserEntity.setRoleEntities(Set.of(roleRepository.findFirstByAppUserRole(AppUserRole.ROLE_USER)));
+        newAppUserEntity.setRoleEntities(Set.of(roleRepository.findFirstByAppUserRoleEnum(AppUserRoleEnum.ROLE_USER)));
         newAppUserEntity.setJoinDate(LocalDateTime.now());
         newAppUserEntity.setActive(true);
         newAppUserEntity.setNotLocked(true);
@@ -132,12 +132,12 @@ public class AppUserServiceImpl implements AppUserService {
 
     private AppUserEntity getAppUserByUsername(String username) {
         log.debug("Get user with username: " + username);
-        return userRepository.findByUsername(username);
+        return appUserRepository.findByUsername(username);
     }
 
     private AppUserEntity getAppUserByEmail(String email) {
         log.debug("Get user with username: " + email);
-        return userRepository.findByEmail(email);
+        return appUserRepository.findByEmail(email);
     }
 
     private void authenticate(String username, String password) {

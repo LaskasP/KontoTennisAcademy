@@ -1,8 +1,7 @@
 package kontopoulos.rest.models.security.entity;
 
-
 import jakarta.persistence.*;
-import kontopoulos.rest.models.security.lov.AppUserRole;
+import kontopoulos.rest.models.security.lov.AppUserRoleEnum;
 import lombok.*;
 
 import static jakarta.persistence.GenerationType.AUTO;
@@ -20,6 +19,6 @@ public class RoleEntity {
     private Long id;
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private AppUserRole appUserRole;
+    private AppUserRoleEnum appUserRoleEnum;
 
 }

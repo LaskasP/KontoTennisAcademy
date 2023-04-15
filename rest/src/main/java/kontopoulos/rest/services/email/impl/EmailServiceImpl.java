@@ -4,7 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import kontopoulos.rest.exceptions.AppUserNotFoundException;
 import kontopoulos.rest.models.security.entity.AppUserEntity;
-import kontopoulos.rest.repos.UserRepository;
+import kontopoulos.rest.repos.AppUserRepository;
 import kontopoulos.rest.services.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class EmailServiceImpl implements EmailService {
 
     public static final String BREAK_LINE = "\n";
     private final JavaMailSender javaMailSender;
-    private final UserRepository userRepository;
+    private final AppUserRepository appUserRepository;
     @Value("${spring.mail.username}")
     private String sender;
 
@@ -40,7 +40,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private String retrieveUsername(String email) throws AppUserNotFoundException {
-        AppUserEntity appUserEntity = userRepository.findByEmail(email);
+        AppUserEntity appUserEntity = appUserRepository.findByEmail(email);
         if (appUserEntity == null) {
             throw new AppUserNotFoundException("User doesn't exist with email: " + email);
         }

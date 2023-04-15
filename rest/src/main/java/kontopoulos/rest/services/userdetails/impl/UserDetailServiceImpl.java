@@ -2,7 +2,7 @@ package kontopoulos.rest.services.userdetails.impl;
 
 import kontopoulos.rest.models.security.UserDetailsImpl;
 import kontopoulos.rest.models.security.entity.AppUserEntity;
-import kontopoulos.rest.repos.UserRepository;
+import kontopoulos.rest.repos.AppUserRepository;
 import kontopoulos.rest.services.attempt.AttemptService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,13 +18,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class UserDetailServiceImpl implements UserDetailsService {
 
-    private UserRepository userRepository;
+    private AppUserRepository appUserRepository;
 
     private AttemptService attemptService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUserEntity appUserEntity = userRepository.findByUsername(username);
+        AppUserEntity appUserEntity = appUserRepository.findByUsername(username);
         if (appUserEntity == null) {
             log.error("User Not Found with username: " + username);
             throw new UsernameNotFoundException("User Not Found with username: " + username);
@@ -32,7 +32,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
         validateLoginAttempts(appUserEntity);
         appUserEntity.setLastLoginDateDisplay(appUserEntity.getLastLoginDate());
         appUserEntity.setLastLoginDate(LocalDateTime.now());
-        userRepository.save(appUserEntity);
+        appUserRepository.save(appUserEntity);
         log.debug("User returned with username: " + username);
         return new UserDetailsImpl(appUserEntity);
     }

@@ -2,9 +2,9 @@ package kontopoulos.rest.configs;
 
 import kontopoulos.rest.models.security.entity.AppUserEntity;
 import kontopoulos.rest.models.security.entity.RoleEntity;
-import kontopoulos.rest.models.security.lov.AppUserRole;
+import kontopoulos.rest.models.security.lov.AppUserRoleEnum;
+import kontopoulos.rest.repos.AppUserRepository;
 import kontopoulos.rest.repos.RoleRepository;
-import kontopoulos.rest.repos.UserRepository;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,13 +16,13 @@ import java.util.Set;
 
 @Component
 public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
-    private final UserRepository userRepository;
+    private final AppUserRepository appUserRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private boolean alreadySetup = false;
 
-    public DataLoader(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    public DataLoader(AppUserRepository appUserRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+        this.appUserRepository = appUserRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -33,8 +33,8 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         if (alreadySetup) {
             return;
         }
-        RoleEntity userRole = createRoleIfNotFound(AppUserRole.ROLE_USER);
-        RoleEntity adminRole = createRoleIfNotFound(AppUserRole.ROLE_ADMIN);
+        RoleEntity userRole = createRoleIfNotFound(AppUserRoleEnum.ROLE_USER);
+        RoleEntity adminRole = createRoleIfNotFound(AppUserRoleEnum.ROLE_ADMIN);
         AppUserEntity user = new AppUserEntity();
         user.setFirstName("Fanis");
         user.setLastName("Kontopoulos");
@@ -44,16 +44,16 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         user.setRoleEntities(Set.of(userRole, adminRole));
         user.setActive(true);
         user.setNotLocked(false);
-        userRepository.save(user);
+        appUserRepository.save(user);
         alreadySetup = true;
     }
 
     @Transactional
-    public RoleEntity createRoleIfNotFound(AppUserRole appUserRole) {
-        RoleEntity role = roleRepository.findFirstByAppUserRole(appUserRole);
+    public RoleEntity createRoleIfNotFound(AppUserRoleEnum appUserRoleEnum) {
+        RoleEntity role = roleRepository.findFirstByAppUserRoleEnum(appUserRoleEnum);
         if (role == null) {
             role = new RoleEntity();
-            role.setAppUserRole(appUserRole);
+            role.setAppUserRoleEnum(appUserRoleEnum);
             roleRepository.save(role);
         }
         return role;

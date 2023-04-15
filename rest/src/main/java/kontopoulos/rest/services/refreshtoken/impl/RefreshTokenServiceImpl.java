@@ -5,8 +5,8 @@ import kontopoulos.rest.models.security.UserDetailsImpl;
 import kontopoulos.rest.models.security.entity.AppUserEntity;
 import kontopoulos.rest.models.security.entity.RefreshTokenEntity;
 import kontopoulos.rest.models.security.rest.response.JWTPairHeadersWrapper;
+import kontopoulos.rest.repos.AppUserRepository;
 import kontopoulos.rest.repos.RefreshTokenRepository;
-import kontopoulos.rest.repos.UserRepository;
 import kontopoulos.rest.services.refreshtoken.RefreshTokenService;
 import kontopoulos.rest.utils.JWTProvider;
 import lombok.AllArgsConstructor;
@@ -28,7 +28,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public static final String REFRESH_TOKEN_WAS_EXPIRED = "Refresh token was expired.";
     public static final String REFRESH_TOKEN_NOT_FOUND = "Refresh token not found.";
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserRepository userRepository;
+    private final AppUserRepository appUserRepository;
     private final JWTProvider jwtProvider;
 
     @Override
@@ -55,7 +55,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public String createRefreshToken(String username) {
         log.info("Begin createRefreshToken");
         RefreshTokenEntity refreshTokenEntity = new RefreshTokenEntity();
-        refreshTokenEntity.setAppUserEntity(userRepository.findByUsername(username));
+        refreshTokenEntity.setAppUserEntity(appUserRepository.findByUsername(username));
         refreshTokenEntity.setExpiryDate(LocalDateTime.now().plus(JWT_REFRESH_TOKEN_EXPIRATION_MS, ChronoUnit.MILLIS));
         refreshTokenEntity.setToken(UUID.randomUUID().toString());
         refreshTokenEntity = refreshTokenRepository.save(refreshTokenEntity);
@@ -67,7 +67,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public int deleteByUserId(String username) {
         log.info("Begin deleteByUserId");
         log.debug("Delete refresh token for username: " + username);
-        return refreshTokenRepository.deleteByAppUserEntity(userRepository.findByUsername(username));
+        return refreshTokenRepository.deleteByAppUserEntity(appUserRepository.findByUsername(username));
     }
 
     private RefreshTokenEntity findByToken(String token) {

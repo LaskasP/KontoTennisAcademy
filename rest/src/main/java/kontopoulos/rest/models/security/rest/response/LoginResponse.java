@@ -1,6 +1,6 @@
 package kontopoulos.rest.models.security.rest.response;
 
-import kontopoulos.rest.models.security.lov.AppUserRole;
+import kontopoulos.rest.models.security.lov.AppUserRoleEnum;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,7 +11,7 @@ public class LoginResponse {
     private String email;
     private String firstname;
     private String lastname;
-    private List<AppUserRole> roles;
+    private List<AppUserRoleEnum> roles;
     private String profileImageUrl;
     private LocalDateTime lastLoginDate;
     private LocalDateTime lastLoginDateDisplay;
@@ -41,11 +41,11 @@ public class LoginResponse {
         this.email = email;
     }
 
-    public List<AppUserRole> getRoles() {
+    public List<AppUserRoleEnum> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<AppUserRole> roles) {
+    public void setRoles(List<AppUserRoleEnum> roles) {
         this.roles = roles;
     }
 

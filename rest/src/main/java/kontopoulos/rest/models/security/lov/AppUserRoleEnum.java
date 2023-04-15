@@ -1,5 +1,5 @@
 package kontopoulos.rest.models.security.lov;
 
-public enum AppUserRole {
+public enum AppUserRoleEnum {
     ROLE_USER, ROLE_ADMIN
 }

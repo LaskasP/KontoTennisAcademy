@@ -18,10 +18,12 @@ public class ReservationEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "application_users_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private AppUserEntity appUserEntity;
 
-    private Long courtId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "court_id", referencedColumnName = "id")
+    private CourtEntity courtEntity;
 
     private LocalDate reservationDate;
 

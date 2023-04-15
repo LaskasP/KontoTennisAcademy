@@ -1,8 +1,6 @@
 package kontopoulos.rest.models.security.rest.response;
 
-
-
-import kontopoulos.rest.models.security.lov.AppUserRole;
+import kontopoulos.rest.models.security.lov.AppUserRoleEnum;
 
 import java.util.List;
 
@@ -11,7 +9,7 @@ public class RegisterResponse {
     private String lastName;
     private String username;
     private String email;
-    private List<AppUserRole> roles;
+    private List<AppUserRoleEnum> roles;
 
     public String getFirstName() {
         return firstName;
@@ -45,11 +43,11 @@ public class RegisterResponse {
         this.email = email;
     }
 
-    public List<AppUserRole> getRoles() {
+    public List<AppUserRoleEnum> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<AppUserRole> roles) {
+    public void setRoles(List<AppUserRoleEnum> roles) {
         this.roles = roles;
     }
 }
