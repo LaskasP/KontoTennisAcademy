@@ -32,6 +32,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final CourtRepository courtRepository;
 
+    @Override
     public void createReservation(ReservationRequest reservationRequest) throws Exception {
         AppUserEntity appUserEntity = appUserRepository.findByUsername(reservationRequest.getUsername());
         if (appUserEntity == null) throw new AppUserNotFoundException("Username cannot be found.");

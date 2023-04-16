@@ -25,12 +25,12 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Validated
 public class AuthController {
 
-    public static final String REFRESH_TOKEN_CANNOT_BE_NULL = "Refresh token cannot be null.";
-    public static final String USERNAME_CANNOT_BE_NULL = "Username cannot be null.";
-    public static final String REGISTRATION = "/registration";
-    public static final String LOGIN = "/login";
-    public static final String REFRESHMENT = "/refreshment";
-    public static final String LOGOUT = "/logout";
+    private static final String REFRESH_TOKEN_CANNOT_BE_NULL = "Refresh token cannot be null.";
+    private static final String USERNAME_CANNOT_BE_NULL = "Username cannot be null.";
+    private static final String REGISTRATION = "/registration";
+    private static final String LOGIN = "/login";
+    private static final String REFRESHMENT = "/refreshment";
+    private static final String LOGOUT = "/logout";
     private AppUserService appUserService;
     private RefreshTokenService refreshTokenService;
 
