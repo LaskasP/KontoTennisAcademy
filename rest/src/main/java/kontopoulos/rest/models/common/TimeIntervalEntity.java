@@ -5,7 +5,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 
-import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -14,5 +14,5 @@ public class TimeIntervalEntity {
     @Id
     private Long id;
 
-    private LocalDate timeValue;
+    private LocalTime timeValue;
 }

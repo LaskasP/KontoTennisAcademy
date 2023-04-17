@@ -37,5 +37,4 @@ public class ReservationEntity {
             inverseJoinColumns = @JoinColumn(
                     name = "time_interval_id"))
     private Set<TimeIntervalEntity> timeIntervalEntities;
-
 }

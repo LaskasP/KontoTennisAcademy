@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.validation.ObjectError;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
@@ -31,8 +31,8 @@ public class ExceptionHandling {
         return new ResponseEntity<>(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), LocalDateTime.now(), List.of("Generic Application Exception"), request.getDescription(false)), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(MissingRequestHeaderException.class)
-    public ResponseEntity<ErrorMessage> missingRequestHeaderExceptionHandler(MissingRequestHeaderException ex, WebRequest request) {
+    @ExceptionHandler({MissingRequestHeaderException.class, HttpMessageNotReadableException.class})
+    public ResponseEntity<ErrorMessage> missingRequestHeaderExceptionHandler(Exception ex, WebRequest request) {
         log.error(ex.getMessage());
         return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), LocalDateTime.now(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.BAD_REQUEST);
     }

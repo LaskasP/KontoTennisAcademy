@@ -39,7 +39,7 @@ public class ReservationServiceImpl implements ReservationService {
         Set<TimeIntervalEntity> timeIntervalEntities = timeIntervalRepository.findAllByTimeValueIsBetweenStartTimeAndEndTime(reservationRequest.getReservationStartTime(), reservationRequest.getReservationEndTime());
         //Todo: Validate timeIntervals
         if (timeIntervalEntities == null) throw new Exception("TimeIntervals not found.");
-        CourtEntity courtEntity = courtRepository.findFirstByCourtType(reservationRequest.getCourtEnum().toString());
+        CourtEntity courtEntity = courtRepository.findFirstByCourtType(reservationRequest.getCourtEnum().toString().toLowerCase());
         ReservationEntity reservationEntity = new ReservationEntity();
         reservationEntity.setAppUserEntity(appUserEntity);
         reservationEntity.setReservationDate(reservationRequest.getReservationDate());

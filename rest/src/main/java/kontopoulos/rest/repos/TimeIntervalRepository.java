@@ -10,6 +10,6 @@ import java.util.Set;
 
 @Repository
 public interface TimeIntervalRepository extends JpaRepository<TimeIntervalEntity, Long> {
-    @Query("select t from TimeIntervalEntity t where t.timeValue >= :startTime and t.timeValue <= :endTime")
-    public Set<TimeIntervalEntity> findAllByTimeValueIsBetweenStartTimeAndEndTime(LocalTime startTime, LocalTime endTime);
+    @Query("select t from TimeIntervalEntity t where t.timeValue >= :startTime and t.timeValue < :endTime")
+    Set<TimeIntervalEntity> findAllByTimeValueIsBetweenStartTimeAndEndTime(LocalTime startTime, LocalTime endTime);
 }

@@ -51,4 +51,4 @@ values (1, '00:00:00'),
 insert into courts (id, court_type)
 values (1, "tennis_1"),
        (2, "tennis_2"),
-       (3, "paddel");
+       (3, "padel");
