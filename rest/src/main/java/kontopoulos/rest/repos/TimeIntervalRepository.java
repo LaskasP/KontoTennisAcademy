@@ -1,6 +1,6 @@
 package kontopoulos.rest.repos;
 
-import kontopoulos.rest.models.common.TimeIntervalEntity;
+import kontopoulos.rest.models.common.entity.TimeIntervalEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

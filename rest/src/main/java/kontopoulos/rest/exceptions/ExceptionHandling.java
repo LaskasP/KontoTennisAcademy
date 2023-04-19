@@ -31,7 +31,7 @@ public class ExceptionHandling {
         return new ResponseEntity<>(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), LocalDateTime.now(), List.of("Generic Application Exception"), request.getDescription(false)), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler({MissingRequestHeaderException.class, HttpMessageNotReadableException.class})
+    @ExceptionHandler({MissingRequestHeaderException.class, HttpMessageNotReadableException.class, InvalidRequestException.class})
     public ResponseEntity<ErrorMessage> missingRequestHeaderExceptionHandler(Exception ex, WebRequest request) {
         log.error(ex.getMessage());
         return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), LocalDateTime.now(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.BAD_REQUEST);

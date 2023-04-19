@@ -1,4 +1,4 @@
-package kontopoulos.rest.models.common;
+package kontopoulos.rest.models.common.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

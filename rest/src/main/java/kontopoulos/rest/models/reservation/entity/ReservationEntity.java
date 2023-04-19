@@ -1,7 +1,7 @@
 package kontopoulos.rest.models.reservation.entity;
 
 import jakarta.persistence.*;
-import kontopoulos.rest.models.common.TimeIntervalEntity;
+import kontopoulos.rest.models.common.entity.TimeIntervalEntity;
 import kontopoulos.rest.models.security.entity.AppUserEntity;
 import lombok.Getter;
 import lombok.Setter;

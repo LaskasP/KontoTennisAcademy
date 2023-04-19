@@ -1,7 +1,8 @@
 package kontopoulos.rest.services.reservation.impl;
 
 import kontopoulos.rest.exceptions.AppUserNotFoundException;
-import kontopoulos.rest.models.common.TimeIntervalEntity;
+import kontopoulos.rest.exceptions.InvalidRequestException;
+import kontopoulos.rest.models.common.entity.TimeIntervalEntity;
 import kontopoulos.rest.models.reservation.entity.CourtEntity;
 import kontopoulos.rest.models.reservation.entity.ReservationEntity;
 import kontopoulos.rest.models.reservation.rest.ReservationRequest;
@@ -13,9 +14,16 @@ import kontopoulos.rest.repos.TimeIntervalRepository;
 import kontopoulos.rest.services.reservation.ReservationService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -23,6 +31,10 @@ import java.util.Set;
 @Transactional
 @Slf4j
 public class ReservationServiceImpl implements ReservationService {
+
+    public static final String TIME_INTERVALS_NOT_FOUND = "TimeIntervals not found.";
+    public static final String RESERVATION_TIMES_ARE_NOT_VALID = "reservationStartTime and reservationEndtime are not valid";
+    public static final int PAGE_SIZE = 65;
 
     private final ReservationRepository reservationRepository;
 
@@ -35,10 +47,10 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void createReservation(ReservationRequest reservationRequest) throws Exception {
         AppUserEntity appUserEntity = appUserRepository.findByUsername(reservationRequest.getUsername());
-        if (appUserEntity == null) throw new AppUserNotFoundException("Username cannot be found.");
+        if (appUserEntity == null) throw new AppUserNotFoundException();
+        validateTimeIntervals(reservationRequest.getReservationStartTime(), reservationRequest.getReservationEndTime());
         Set<TimeIntervalEntity> timeIntervalEntities = timeIntervalRepository.findAllByTimeValueIsBetweenStartTimeAndEndTime(reservationRequest.getReservationStartTime(), reservationRequest.getReservationEndTime());
-        //Todo: Validate timeIntervals
-        if (timeIntervalEntities == null) throw new Exception("TimeIntervals not found.");
+        if (timeIntervalEntities == null) throw new InvalidRequestException(TIME_INTERVALS_NOT_FOUND);
         CourtEntity courtEntity = courtRepository.findFirstByCourtType(reservationRequest.getCourtEnum().toString().toLowerCase());
         ReservationEntity reservationEntity = new ReservationEntity();
         reservationEntity.setAppUserEntity(appUserEntity);
@@ -47,4 +59,18 @@ public class ReservationServiceImpl implements ReservationService {
         reservationEntity.setTimeIntervalEntities(timeIntervalEntities);
         reservationRepository.save(reservationEntity);
     }
+
+    @Override
+    public List<ReservationEntity> getNextReservations(int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("reservationDate"));
+        return reservationRepository.findByReservationDateAfter(LocalDate.now().minusDays(1), pageable);
+    }
+
+    private void validateTimeIntervals(LocalTime reservationStartTime, LocalTime reservationEndTime) throws InvalidRequestException {
+        boolean isReservationTimeInvalid = (reservationStartTime.compareTo(reservationEndTime) >= 0) || (reservationStartTime.until(reservationEndTime, ChronoUnit.HOURS) < 1);
+        if (isReservationTimeInvalid) {
+            throw new InvalidRequestException(RESERVATION_TIMES_ARE_NOT_VALID);
+        }
+    }
+
 }

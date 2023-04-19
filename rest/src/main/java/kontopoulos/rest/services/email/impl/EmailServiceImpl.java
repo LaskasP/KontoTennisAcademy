@@ -29,12 +29,12 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendResetPasswordMail(String email) throws AppUserNotFoundException {
         log.info("Begin sendResetPasswordMail");
-        String username = retrieveUsername(email);
         try {
+            String username = retrieveUsername(email);
             javaMailSender.send(createEmail(username, email, "https://maximosstratis.github.io/sofoulakos/"));
             log.debug("Email send to " + email);
         } catch (MessagingException e) {
-            log.error("Error while sending mail!");
+            log.error("Error while sending mail. Error: " + e.getMessage());
         }
         log.info("End sendResetPasswordMail");
     }
