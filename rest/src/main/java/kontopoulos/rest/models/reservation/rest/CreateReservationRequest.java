@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
-public class ReservationRequest {
+public class CreateReservationRequest {
     @NotBlank(message = "username cannot be blank.")
     private String username;
     @NotNull(message = "courtEnum cannot be blank.")

@@ -1,13 +1,12 @@
 package kontopoulos.rest.models.reservation.entity;
 
 import jakarta.persistence.*;
-import kontopoulos.rest.models.common.entity.TimeIntervalEntity;
 import kontopoulos.rest.models.security.entity.AppUserEntity;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -29,12 +28,7 @@ public class ReservationEntity {
 
     private LocalDate reservationDate;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "reservations_time_intervals",
-            joinColumns = @JoinColumn(
-                    name = "reservation_id"),
-            inverseJoinColumns = @JoinColumn(
-                    name = "time_interval_id"))
-    private Set<TimeIntervalEntity> timeIntervalEntities;
+    private LocalTime reservationStartTime;
+
+    private LocalTime reservationEndTime;
 }

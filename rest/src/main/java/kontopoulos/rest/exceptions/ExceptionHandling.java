@@ -3,6 +3,8 @@ package kontopoulos.rest.exceptions;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.NestedExceptionUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -32,9 +34,16 @@ public class ExceptionHandling {
     }
 
     @ExceptionHandler({MissingRequestHeaderException.class, HttpMessageNotReadableException.class, InvalidRequestException.class})
-    public ResponseEntity<ErrorMessage> missingRequestHeaderExceptionHandler(Exception ex, WebRequest request) {
+    public ResponseEntity<ErrorMessage> generalBadRequestExceptionHandler(Exception ex, WebRequest request) {
         log.error(ex.getMessage());
         return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), LocalDateTime.now(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorMessage> dataIntegrityViolationExceptionHandler(DataIntegrityViolationException ex, WebRequest request) {
+        String message = NestedExceptionUtils.getMostSpecificCause(ex).getMessage();
+        log.error(message);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.BAD_REQUEST.value(), LocalDateTime.now(), List.of(message), request.getDescription(false)), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

@@ -1,7 +1,7 @@
 package kontopoulos.rest.controllers;
 
 import jakarta.validation.Valid;
-import kontopoulos.rest.models.reservation.rest.ReservationRequest;
+import kontopoulos.rest.models.reservation.rest.CreateReservationRequest;
 import kontopoulos.rest.models.security.rest.response.RegisterResponse;
 import kontopoulos.rest.services.reservation.ReservationService;
 import lombok.AllArgsConstructor;
@@ -22,8 +22,8 @@ public class ReservationController {
     private ReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity<RegisterResponse> createReservation(@Valid @RequestBody ReservationRequest reservationRequest) throws Exception {
-        reservationService.createReservation(reservationRequest);
+    public ResponseEntity<RegisterResponse> createReservation(@Valid @RequestBody CreateReservationRequest createReservationRequest) throws Exception {
+        reservationService.createReservation(createReservationRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
