@@ -5,6 +5,7 @@ import kontopoulos.rest.exceptions.InvalidRequestException;
 import kontopoulos.rest.models.reservation.entity.CourtEntity;
 import kontopoulos.rest.models.reservation.entity.ReservationEntity;
 import kontopoulos.rest.models.reservation.rest.CreateReservationRequest;
+import kontopoulos.rest.models.reservation.rest.CreateReservationResponse;
 import kontopoulos.rest.models.security.AuthenticationFacade;
 import kontopoulos.rest.models.security.entity.AppUserEntity;
 import kontopoulos.rest.repos.AppUserRepository;
@@ -40,7 +41,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final AuthenticationFacade authenticationFacade;
 
     @Override
-    public void createReservation(CreateReservationRequest createReservationRequest) throws Exception {
+    public CreateReservationResponse createReservation(CreateReservationRequest createReservationRequest) throws Exception {
         validateUsername(createReservationRequest.getUsername());
         AppUserEntity appUserEntity = appUserRepository.findByUsername(createReservationRequest.getUsername());
         if (appUserEntity == null) throw new AppUserNotFoundException();
@@ -52,7 +53,8 @@ public class ReservationServiceImpl implements ReservationService {
         reservationEntity.setCourtEntity(courtEntity);
         reservationEntity.setReservationStartTime(createReservationRequest.getReservationStartTime());
         reservationEntity.setReservationEndTime(createReservationRequest.getReservationEndTime());
-        reservationRepository.save(reservationEntity);
+        ReservationEntity insertedReservationEntity = reservationRepository.save(reservationEntity);
+        return reservationMapper
     }
 
     @Override

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
-public class ReservationResponse {
+public class CreateReservationResponse {
     private Long id;
     private LocalDate reservationDate;
     private CourtEnum courtType;
