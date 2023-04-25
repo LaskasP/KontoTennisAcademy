@@ -1,6 +1,5 @@
 package kontopoulos.rest.configs;
 
-
 import kontopoulos.rest.filters.JWTValidatorFilter;
 import kontopoulos.rest.models.security.SecurityConstant;
 import kontopoulos.rest.utils.JWTAuthenticationEntryPoint;
@@ -10,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,7 +26,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Configuration
 @AllArgsConstructor
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = false, securedEnabled = true)
 public class SecurityConfig {
 
     private final JWTValidatorFilter jwtValidatorFilter;

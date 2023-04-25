@@ -2,11 +2,13 @@ package kontopoulos.rest.services.reservation.impl;
 
 import kontopoulos.rest.exceptions.AppUserNotFoundException;
 import kontopoulos.rest.exceptions.InvalidRequestException;
+import kontopoulos.rest.models.common.rest.AppUserResponse;
 import kontopoulos.rest.models.reservation.entity.CourtEntity;
 import kontopoulos.rest.models.reservation.entity.ReservationEntity;
 import kontopoulos.rest.models.reservation.rest.CreateReservationRequest;
 import kontopoulos.rest.models.reservation.rest.CreateReservationResponse;
 import kontopoulos.rest.models.reservation.rest.GetAppUserReservationResponse;
+import kontopoulos.rest.models.reservation.rest.GetFullReservation;
 import kontopoulos.rest.models.security.AuthenticationFacade;
 import kontopoulos.rest.models.security.entity.AppUserEntity;
 import kontopoulos.rest.repos.AppUserRepository;
@@ -56,9 +58,21 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<ReservationEntity> getNextReservations(int page) {
+    public List<GetFullReservation> getPageFullReservations(int page) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("reservationDate"));
-        return reservationRepository.findByReservationDateAfter(LocalDate.now().minusDays(1), pageable);
+        List<ReservationEntity> reservationEntityList = reservationRepository.findByReservationDateAfter(LocalDate.now().minusDays(1), pageable);
+        return convertEntityListToFullResponseList(reservationEntityList);
+    }
+
+    private List<GetFullReservation> convertEntityListToFullResponseList(List<ReservationEntity> reservationEntityList) {
+        List<GetFullReservation> getFullReservationList = new ArrayList<>();
+        for (ReservationEntity reservationEntity : reservationEntityList) {
+            GetFullReservation getFullReservation = modelMapper.map(reservationEntity, GetFullReservation.class);
+            getFullReservation.setCourtType(reservationEntity.getCourtEntity().getCourtType());
+            getFullReservation.setAppUserResponse(modelMapper.map(reservationEntity.getAppUserEntity(), AppUserResponse.class));
+            getFullReservationList.add(getFullReservation);
+        }
+        return getFullReservationList;
     }
 
     @Override
