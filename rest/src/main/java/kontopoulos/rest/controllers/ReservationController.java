@@ -1,6 +1,7 @@
 package kontopoulos.rest.controllers;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import kontopoulos.rest.exceptions.AppUserNotFoundException;
 import kontopoulos.rest.exceptions.InvalidRequestException;
 import kontopoulos.rest.models.reservation.rest.CreateReservationRequest;
@@ -35,5 +36,11 @@ public class ReservationController {
     public ResponseEntity<List<GetAppUserReservationResponse>> getAppUserReservations(@PathVariable(value = USERNAME) String username) throws InvalidRequestException, AppUserNotFoundException {
         List<GetAppUserReservationResponse> GetAppUserReservationResponseList = reservationService.getAppUserReservations(username);
         return ResponseEntity.ok(GetAppUserReservationResponseList);
+    }
+
+    @DeleteMapping("/{username}/{id}")
+    public ResponseEntity<Void> deleteAppUserReservation(@PathVariable(value = USERNAME) @NotBlank String username, @PathVariable @NotBlank Long id) throws InvalidRequestException, AppUserNotFoundException {
+        reservationService.deleteAppUserReservation(username, id);
+        return ResponseEntity.ok().build();
     }
 }

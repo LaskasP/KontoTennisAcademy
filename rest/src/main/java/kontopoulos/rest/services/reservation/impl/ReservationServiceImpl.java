@@ -70,6 +70,12 @@ public class ReservationServiceImpl implements ReservationService {
         return convertEntityListToResponseList(reservationEntityList);
     }
 
+    @Override
+    public void deleteAppUserReservation(String username, Long id) throws InvalidRequestException {
+        validateUsername(username);
+        reservationRepository.deleteById(id);
+    }
+
     private List<GetAppUserReservationResponse> convertEntityListToResponseList(List<ReservationEntity> reservationEntityList) {
         List<GetAppUserReservationResponse> getAppUserReservationResponseList = new ArrayList<>();
         for (ReservationEntity reservationEntity : reservationEntityList) {
