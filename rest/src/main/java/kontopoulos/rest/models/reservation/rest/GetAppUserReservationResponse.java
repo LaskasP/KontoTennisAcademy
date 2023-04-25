@@ -6,7 +6,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
-public class CreateReservationResponse {
+public class GetAppUserReservationResponse {
+    private Long id;
     private LocalDate reservationDate;
     private String courtType;
     private LocalTime reservationStartTime;
