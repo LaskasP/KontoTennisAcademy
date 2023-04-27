@@ -29,7 +29,6 @@ create table application_users
     last_name               varchar(255),
     password                varchar(200),
     profile_image_url       varchar(255),
-    user_id                 varchar(255),
     username                varchar(25),
     primary key (id)
 )^;
@@ -62,13 +61,15 @@ create table courts
 create table reservations
 (
     id               bigint not null,
-    user_id          bigint not null,
+    player_id          bigint not null,
     court_id         bigint not null,
     reservation_date date   not null,
+    second_player_id bigint,
+    available_for_second_player   bit not null,
     reservation_start_time          time not null,
     reservation_end_time            time not null,
     primary key (id),
-    foreign key (user_id) references application_users (id),
+    foreign key (player_id) references application_users (id),
     foreign key (court_id) references courts (id)
 )^;
 

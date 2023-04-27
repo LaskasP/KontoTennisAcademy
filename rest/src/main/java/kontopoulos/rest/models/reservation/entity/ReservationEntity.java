@@ -18,13 +18,18 @@ public class ReservationEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "player_id", referencedColumnName = "id")
     private AppUserEntity appUserEntity;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "court_id", referencedColumnName = "id")
     private CourtEntity courtEntity;
+
+    private Boolean availableForSecondPlayer;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "second_player_id", referencedColumnName = "id")
+    private AppUserEntity secondAppUserEntity = null;
 
     private LocalDate reservationDate;
 

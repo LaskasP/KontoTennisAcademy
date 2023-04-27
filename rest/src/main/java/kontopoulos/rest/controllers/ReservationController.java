@@ -5,10 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import kontopoulos.rest.exceptions.AppUserNotFoundException;
 import kontopoulos.rest.exceptions.InvalidRequestException;
-import kontopoulos.rest.models.reservation.rest.CreateReservationRequest;
-import kontopoulos.rest.models.reservation.rest.CreateReservationResponse;
-import kontopoulos.rest.models.reservation.rest.GetAppUserReservationResponse;
-import kontopoulos.rest.models.reservation.rest.GetFullReservation;
+import kontopoulos.rest.models.reservation.rest.*;
 import kontopoulos.rest.services.reservation.ReservationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -51,8 +48,14 @@ public class ReservationController {
 
     @GetMapping
     @Secured(SECURED_ROLE_ADMIN)
-    public ResponseEntity<List<GetFullReservation>> getReservations(@NotNull(message = "page cannot be null") int page) {
-        List<GetFullReservation> getFullReservationList = reservationService.getPageFullReservations(page);
+    public ResponseEntity<List<GetFullReservation>> getPageOfFullReservations(@NotNull(message = "page cannot be null") int page) {
+        List<GetFullReservation> getFullReservationList = reservationService.getPageFullOfReservations(page);
         return ResponseEntity.ok(getFullReservationList);
+    }
+
+    @PutMapping
+    public ResponseEntity<InsertPlayerToReservationResponse> insertPlayerToReservation(@Valid @RequestBody InsertPlayerToReservationRequest insertPlayerToReservationRequest) throws InvalidRequestException, AppUserNotFoundException {
+        InsertPlayerToReservationResponse insertPlayerToReservationResponse = reservationService.insertSecondPlayerToReservation(insertPlayerToReservationRequest);
+        return ResponseEntity.ok(insertPlayerToReservationResponse);
     }
 }

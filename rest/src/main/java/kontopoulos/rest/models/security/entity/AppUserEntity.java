@@ -21,7 +21,6 @@ public class AppUserEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false, updatable = false)
     private Long id;
-    private String userId;
     private String firstName;
     private String lastName;
     private String username;

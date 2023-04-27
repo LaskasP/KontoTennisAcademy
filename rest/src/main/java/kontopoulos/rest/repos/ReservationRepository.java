@@ -13,5 +13,7 @@ import java.util.List;
 public interface ReservationRepository extends JpaRepository<ReservationEntity, Long> {
     List<ReservationEntity> findByAppUserEntity(AppUserEntity appUserEntity);
 
+    List<ReservationEntity> findByAppUserEntityOrSecondAppUserEntity(AppUserEntity appUserEntity, AppUserEntity secondAppUserEntity);
+
     List<ReservationEntity> findByReservationDateAfter(LocalDate currentDate, Pageable page);
 }

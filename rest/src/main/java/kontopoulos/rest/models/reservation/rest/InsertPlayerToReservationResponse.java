@@ -6,13 +6,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
-public class GetAppUserReservationResponse {
-    private Long id;
+public class InsertPlayerToReservationResponse {
     private LocalDate reservationDate;
-    private String playerUsername;
     private String courtType;
     private LocalTime reservationStartTime;
     private LocalTime reservationEndTime;
-    private Boolean availableForSecondPlayer;
+    private String firstPlayerUsername;
     private String secondPlayerUsername;
 }

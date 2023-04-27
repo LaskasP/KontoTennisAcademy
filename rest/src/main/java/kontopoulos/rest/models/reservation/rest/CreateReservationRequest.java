@@ -20,4 +20,6 @@ public class CreateReservationRequest {
     private LocalTime reservationStartTime;
     @NotNull(message = "reservationEndTime cannot be blank.")
     private LocalTime reservationEndTime;
+    @NotNull(message = "availableForSecondPlayer cannot be null")
+    private Boolean availableForSecondPlayer;
 }

@@ -5,10 +5,7 @@ import kontopoulos.rest.exceptions.InvalidRequestException;
 import kontopoulos.rest.models.common.rest.AppUserResponse;
 import kontopoulos.rest.models.reservation.entity.CourtEntity;
 import kontopoulos.rest.models.reservation.entity.ReservationEntity;
-import kontopoulos.rest.models.reservation.rest.CreateReservationRequest;
-import kontopoulos.rest.models.reservation.rest.CreateReservationResponse;
-import kontopoulos.rest.models.reservation.rest.GetAppUserReservationResponse;
-import kontopoulos.rest.models.reservation.rest.GetFullReservation;
+import kontopoulos.rest.models.reservation.rest.*;
 import kontopoulos.rest.models.security.AuthenticationFacade;
 import kontopoulos.rest.models.security.entity.AppUserEntity;
 import kontopoulos.rest.repos.AppUserRepository;
@@ -39,6 +36,9 @@ public class ReservationServiceImpl implements ReservationService {
     public static final String RESERVATION_TIMES_ARE_NOT_VALID = "reservationStartTime and reservationEndTime are not valid";
     public static final String PROVIDED_USERNAME_DOES_NOT_MATCH_AUTHENTICATED_USER = "Provided username does not match authenticated user";
     public static final int PAGE_SIZE = 65;
+    public static final String RESERVATION_ID_DOES_NOT_EXISTS = "ReservationId does not exists";
+    public static final String RESERVATION_NOT_AVAILABLE_FOR_SECOND_PLAYER = "Reservation not available for second player";
+    public static final String YOU_CANNOT_ADD_YOUR_SELF_AS_SECOND_PLAYER = "You cannot add your self as second player";
     private final ReservationRepository reservationRepository;
     private final AppUserRepository appUserRepository;
     private final CourtRepository courtRepository;
@@ -58,7 +58,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<GetFullReservation> getPageFullReservations(int page) {
+    public List<GetFullReservation> getPageFullOfReservations(int page) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("reservationDate"));
         List<ReservationEntity> reservationEntityList = reservationRepository.findByReservationDateAfter(LocalDate.now().minusDays(1), pageable);
         return convertEntityListToFullResponseList(reservationEntityList);
@@ -69,8 +69,11 @@ public class ReservationServiceImpl implements ReservationService {
         for (ReservationEntity reservationEntity : reservationEntityList) {
             GetFullReservation getFullReservation = modelMapper.map(reservationEntity, GetFullReservation.class);
             getFullReservation.setCourtType(reservationEntity.getCourtEntity().getCourtType());
-            getFullReservation.setAppUserResponse(modelMapper.map(reservationEntity.getAppUserEntity(), AppUserResponse.class));
+            getFullReservation.setPlayer(modelMapper.map(reservationEntity.getAppUserEntity(), AppUserResponse.class));
             getFullReservationList.add(getFullReservation);
+            if (reservationEntity.getSecondAppUserEntity() != null) {
+                getFullReservation.setSecondPlayer(modelMapper.map(reservationEntity.getSecondAppUserEntity(), AppUserResponse.class));
+            }
         }
         return getFullReservationList;
     }
@@ -80,7 +83,7 @@ public class ReservationServiceImpl implements ReservationService {
         validateUsername(username);
         AppUserEntity appUserEntity = appUserRepository.findByUsername(username);
         if (appUserEntity == null) throw new AppUserNotFoundException();
-        List<ReservationEntity> reservationEntityList = reservationRepository.findByAppUserEntity(appUserEntity);
+        List<ReservationEntity> reservationEntityList = reservationRepository.findByAppUserEntityOrSecondAppUserEntity(appUserEntity, appUserEntity);
         return convertEntityListToResponseList(reservationEntityList);
     }
 
@@ -90,11 +93,40 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    @Override
+    public InsertPlayerToReservationResponse insertSecondPlayerToReservation(InsertPlayerToReservationRequest insertPlayerToReservationRequest) throws InvalidRequestException, AppUserNotFoundException {
+        validateUsername(insertPlayerToReservationRequest.getUsername());
+        AppUserEntity secondPlayer = appUserRepository.findByUsername(insertPlayerToReservationRequest.getUsername());
+        if (secondPlayer == null) throw new AppUserNotFoundException();
+        ReservationEntity reservationEntity = reservationRepository.findById(insertPlayerToReservationRequest.getReservationId()).orElseThrow(() -> new InvalidRequestException(RESERVATION_ID_DOES_NOT_EXISTS));
+        if (secondPlayer.getUsername().equalsIgnoreCase(reservationEntity.getAppUserEntity().getUsername()))
+            throw new InvalidRequestException(YOU_CANNOT_ADD_YOUR_SELF_AS_SECOND_PLAYER);
+        boolean isReservationNotOpenForSecondPlayer = !reservationEntity.getAvailableForSecondPlayer() || reservationEntity.getSecondAppUserEntity() != null;
+        if (isReservationNotOpenForSecondPlayer)
+            throw new InvalidRequestException(RESERVATION_NOT_AVAILABLE_FOR_SECOND_PLAYER);
+        reservationEntity.setSecondAppUserEntity(secondPlayer);
+        reservationEntity.setAvailableForSecondPlayer(false);
+        ReservationEntity updatedReservationEntity = reservationRepository.save(reservationEntity);
+        return convertUpdatedEntityToInsertPlayerToReservationResponse(updatedReservationEntity);
+    }
+
+    private InsertPlayerToReservationResponse convertUpdatedEntityToInsertPlayerToReservationResponse(ReservationEntity updatedReservationEntity) {
+        InsertPlayerToReservationResponse insertPlayerToReservationResponse = modelMapper.map(updatedReservationEntity, InsertPlayerToReservationResponse.class);
+        insertPlayerToReservationResponse.setFirstPlayerUsername(updatedReservationEntity.getAppUserEntity().getUsername());
+        insertPlayerToReservationResponse.setSecondPlayerUsername(updatedReservationEntity.getSecondAppUserEntity().getUsername());
+        insertPlayerToReservationResponse.setCourtType(updatedReservationEntity.getCourtEntity().getCourtType());
+        return insertPlayerToReservationResponse;
+    }
+
     private List<GetAppUserReservationResponse> convertEntityListToResponseList(List<ReservationEntity> reservationEntityList) {
         List<GetAppUserReservationResponse> getAppUserReservationResponseList = new ArrayList<>();
         for (ReservationEntity reservationEntity : reservationEntityList) {
             GetAppUserReservationResponse getAppUserReservationResponseItem = modelMapper.map(reservationEntity, GetAppUserReservationResponse.class);
             getAppUserReservationResponseItem.setCourtType(reservationEntity.getCourtEntity().getCourtType());
+            getAppUserReservationResponseItem.setPlayerUsername(reservationEntity.getAppUserEntity().getUsername());
+            if (reservationEntity.getSecondAppUserEntity() != null) {
+                getAppUserReservationResponseItem.setSecondPlayerUsername(reservationEntity.getSecondAppUserEntity().getUsername());
+            }
             getAppUserReservationResponseList.add(getAppUserReservationResponseItem);
         }
         return getAppUserReservationResponseList;
