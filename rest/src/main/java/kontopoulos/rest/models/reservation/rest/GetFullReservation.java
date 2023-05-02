@@ -10,7 +10,7 @@ import java.time.LocalTime;
 public class GetFullReservation {
     private Long id;
     private AppUserResponse player;
-    private String CourtType;
+    private String courtType;
     private LocalDate reservationDate;
     private LocalTime reservationStartTime;
     private LocalTime reservationEndTime;

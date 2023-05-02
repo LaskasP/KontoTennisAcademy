@@ -53,7 +53,7 @@ public class ExceptionHandling {
     }
 
     @ExceptionHandler(RefreshTokenException.class)
-    public ResponseEntity<ErrorMessage> RefreshTokenExpiredExceptionHandler(RefreshTokenException ex, WebRequest request) {
+    public ResponseEntity<ErrorMessage> refreshTokenExpiredExceptionHandler(RefreshTokenException ex, WebRequest request) {
         log.error(ex.getMessage());
         return new ResponseEntity<>(new ErrorMessage(HttpStatus.FORBIDDEN.value(), LocalDateTime.now(), List.of(ex.getMessage()), request.getDescription(false)), HttpStatus.FORBIDDEN);
     }

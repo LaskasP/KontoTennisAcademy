@@ -52,9 +52,9 @@ public class ReservationServiceImpl implements ReservationService {
         if (appUserEntity == null) throw new AppUserNotFoundException();
         validateTimeIntervals(createReservationRequest.getReservationStartTime(), createReservationRequest.getReservationEndTime());
         CourtEntity courtEntity = courtRepository.findFirstByCourtType(createReservationRequest.getCourtEnum().toString().toLowerCase());
-        ReservationEntity reservationEntity = convertToEntity(createReservationRequest, appUserEntity, courtEntity);
+        ReservationEntity reservationEntity = convertCreateReservationRequestToReservationEntity(createReservationRequest, appUserEntity, courtEntity);
         ReservationEntity insertedReservationEntity = reservationRepository.save(reservationEntity);
-        return convertToDto(insertedReservationEntity);
+        return convertReservationEntityToCreateReservationResponse(insertedReservationEntity);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class ReservationServiceImpl implements ReservationService {
         AppUserEntity appUserEntity = appUserRepository.findByUsername(username);
         if (appUserEntity == null) throw new AppUserNotFoundException();
         List<ReservationEntity> reservationEntityList = reservationRepository.findByAppUserEntityOrSecondAppUserEntity(appUserEntity, appUserEntity);
-        return convertEntityListToResponseList(reservationEntityList);
+        return convertReservationEntityListToGetAppUserReservationResponseList(reservationEntityList);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class ReservationServiceImpl implements ReservationService {
         return insertPlayerToReservationResponse;
     }
 
-    private List<GetAppUserReservationResponse> convertEntityListToResponseList(List<ReservationEntity> reservationEntityList) {
+    private List<GetAppUserReservationResponse> convertReservationEntityListToGetAppUserReservationResponseList(List<ReservationEntity> reservationEntityList) {
         List<GetAppUserReservationResponse> getAppUserReservationResponseList = new ArrayList<>();
         for (ReservationEntity reservationEntity : reservationEntityList) {
             GetAppUserReservationResponse getAppUserReservationResponseItem = modelMapper.map(reservationEntity, GetAppUserReservationResponse.class);
@@ -144,13 +144,13 @@ public class ReservationServiceImpl implements ReservationService {
             throw new InvalidRequestException(PROVIDED_USERNAME_DOES_NOT_MATCH_AUTHENTICATED_USER);
     }
 
-    private CreateReservationResponse convertToDto(ReservationEntity insertedReservationEntity) {
+    private CreateReservationResponse convertReservationEntityToCreateReservationResponse(ReservationEntity insertedReservationEntity) {
         CreateReservationResponse createReservationResponse = modelMapper.map(insertedReservationEntity, CreateReservationResponse.class);
         createReservationResponse.setCourtType(insertedReservationEntity.getCourtEntity().getCourtType());
         return createReservationResponse;
     }
 
-    private ReservationEntity convertToEntity(CreateReservationRequest createReservationRequest, AppUserEntity appUserEntity, CourtEntity courtEntity) {
+    private ReservationEntity convertCreateReservationRequestToReservationEntity(CreateReservationRequest createReservationRequest, AppUserEntity appUserEntity, CourtEntity courtEntity) {
         ReservationEntity reservationEntity = modelMapper.map(createReservationRequest, ReservationEntity.class);
         reservationEntity.setAppUserEntity(appUserEntity);
         reservationEntity.setCourtEntity(courtEntity);

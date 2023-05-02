@@ -36,12 +36,12 @@ public class ReservationController {
 
     @GetMapping(USERNAME_PATH)
     public ResponseEntity<List<GetAppUserReservationResponse>> getAppUserReservations(@PathVariable(value = USERNAME) @NotBlank String username) throws InvalidRequestException, AppUserNotFoundException {
-        List<GetAppUserReservationResponse> GetAppUserReservationResponseList = reservationService.getAppUserReservations(username);
-        return ResponseEntity.ok(GetAppUserReservationResponseList);
+        List<GetAppUserReservationResponse> getAppUserReservationResponseList = reservationService.getAppUserReservations(username);
+        return ResponseEntity.ok(getAppUserReservationResponseList);
     }
 
     @DeleteMapping(USERNAME_ID_PATH)
-    public ResponseEntity<Void> deleteAppUserReservation(@PathVariable(value = USERNAME) @NotBlank String username, @PathVariable @NotBlank Long id) throws InvalidRequestException, AppUserNotFoundException {
+    public ResponseEntity<Void> deleteAppUserReservation(@PathVariable(value = USERNAME) @NotBlank String username, @PathVariable @NotBlank Long id) throws InvalidRequestException {
         reservationService.deleteAppUserReservation(username, id);
         return ResponseEntity.ok().build();
     }

@@ -1,6 +1,9 @@
 package kontopoulos.rest.models.security;
 
 public class SecurityConstant {
+    private SecurityConstant() {
+    }
+
     public static final String JWT_SUBJECT = "Jwt-Token";
     public static final String USERNAME = "username";
     public static final String AUTHORITIES = "authorities";
@@ -14,4 +17,5 @@ public class SecurityConstant {
     public static final String OPTIONS_HTTP_METHOD = "OPTIONS";
     public static final String[] PUBLIC_URLS = {"/auth/login", "/auth/registration", "/auth/refreshment", "/password/reset", "/user/image/**", "/error", "/api-docs/**", "/swagger-ui/**"};
     public static final String REFRESH_AUTHORIZATION_HEADER = "Authorization-Refresh";
+
 }
