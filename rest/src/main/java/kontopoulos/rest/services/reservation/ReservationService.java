@@ -11,6 +11,8 @@ public interface ReservationService {
 
     List<GetFullReservation> getPageFullOfReservations(int page);
 
+    List<GetReservation> getPageOfReservations(int page);
+
     List<GetAppUserReservationResponse> getAppUserReservations(String username) throws InvalidRequestException, AppUserNotFoundException;
 
     void deleteAppUserReservation(String username, Long id) throws InvalidRequestException;

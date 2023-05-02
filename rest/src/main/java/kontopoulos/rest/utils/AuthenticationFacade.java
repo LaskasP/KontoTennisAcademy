@@ -1,4 +1,4 @@
-package kontopoulos.rest.models.security;
+package kontopoulos.rest.utils;
 
 import org.springframework.security.core.Authentication;
 

@@ -6,12 +6,12 @@ import kontopoulos.rest.models.common.rest.AppUserResponse;
 import kontopoulos.rest.models.reservation.entity.CourtEntity;
 import kontopoulos.rest.models.reservation.entity.ReservationEntity;
 import kontopoulos.rest.models.reservation.rest.*;
-import kontopoulos.rest.models.security.AuthenticationFacade;
 import kontopoulos.rest.models.security.entity.AppUserEntity;
 import kontopoulos.rest.repos.AppUserRepository;
 import kontopoulos.rest.repos.CourtRepository;
 import kontopoulos.rest.repos.ReservationRepository;
 import kontopoulos.rest.services.reservation.ReservationService;
+import kontopoulos.rest.utils.AuthenticationFacade;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -39,6 +39,7 @@ public class ReservationServiceImpl implements ReservationService {
     public static final String RESERVATION_ID_DOES_NOT_EXISTS = "ReservationId does not exists";
     public static final String RESERVATION_NOT_AVAILABLE_FOR_SECOND_PLAYER = "Reservation not available for second player";
     public static final String YOU_CANNOT_ADD_YOUR_SELF_AS_SECOND_PLAYER = "You cannot add your self as second player";
+    public static final String SORT_BY_RESERVATION_DATE = "reservationDate";
     private final ReservationRepository reservationRepository;
     private final AppUserRepository appUserRepository;
     private final CourtRepository courtRepository;
@@ -59,9 +60,28 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public List<GetFullReservation> getPageFullOfReservations(int page) {
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("reservationDate"));
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by(SORT_BY_RESERVATION_DATE));
         List<ReservationEntity> reservationEntityList = reservationRepository.findByReservationDateAfter(LocalDate.now().minusDays(1), pageable);
         return convertEntityListToFullResponseList(reservationEntityList);
+    }
+
+    @Override
+    public List<GetReservation> getPageOfReservations(int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by(SORT_BY_RESERVATION_DATE));
+        List<ReservationEntity> reservationEntityList = reservationRepository.findByReservationDateAfter(LocalDate.now().minusDays(1), pageable);
+        return convertEntityListToResponseList(reservationEntityList);
+    }
+
+    private List<GetReservation> convertEntityListToResponseList(List<ReservationEntity> reservationEntityList) {
+        List<GetReservation> getReservationList = new ArrayList<>();
+        for (ReservationEntity reservationEntity : reservationEntityList) {
+            GetReservation getReservation = modelMapper.map(reservationEntity, GetReservation.class);
+            getReservation.setCourtType(reservationEntity.getCourtEntity().getCourtType());
+            getReservation.setUsername(reservationEntity.getAppUserEntity().getUsername());
+            getReservation.setProfileImageUrl(reservationEntity.getAppUserEntity().getProfileImageUrl());
+            getReservationList.add(getReservation);
+        }
+        return getReservationList;
     }
 
     private List<GetFullReservation> convertEntityListToFullResponseList(List<ReservationEntity> reservationEntityList) {
@@ -70,10 +90,10 @@ public class ReservationServiceImpl implements ReservationService {
             GetFullReservation getFullReservation = modelMapper.map(reservationEntity, GetFullReservation.class);
             getFullReservation.setCourtType(reservationEntity.getCourtEntity().getCourtType());
             getFullReservation.setPlayer(modelMapper.map(reservationEntity.getAppUserEntity(), AppUserResponse.class));
-            getFullReservationList.add(getFullReservation);
             if (reservationEntity.getSecondAppUserEntity() != null) {
                 getFullReservation.setSecondPlayer(modelMapper.map(reservationEntity.getSecondAppUserEntity(), AppUserResponse.class));
             }
+            getFullReservationList.add(getFullReservation);
         }
         return getFullReservationList;
     }

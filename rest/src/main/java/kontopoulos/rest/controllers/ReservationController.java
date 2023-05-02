@@ -26,6 +26,8 @@ public class ReservationController {
     public static final String USERNAME = "username";
     public static final String USERNAME_ID_PATH = "/{username}/{id}";
     public static final String SECURED_ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String PAGE_CANNOT_BE_NULL = "page cannot be null";
+    public static final String ADMIN = "/admin";
     private ReservationService reservationService;
 
     @PostMapping
@@ -46,11 +48,17 @@ public class ReservationController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
+    @GetMapping(ADMIN)
     @Secured(SECURED_ROLE_ADMIN)
-    public ResponseEntity<List<GetFullReservation>> getPageOfFullReservations(@NotNull(message = "page cannot be null") int page) {
+    public ResponseEntity<List<GetFullReservation>> getPageOfFullReservations(@NotNull(message = PAGE_CANNOT_BE_NULL) int page) {
         List<GetFullReservation> getFullReservationList = reservationService.getPageFullOfReservations(page);
         return ResponseEntity.ok(getFullReservationList);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<GetReservation>> getPageOfReservations(@NotNull(message = PAGE_CANNOT_BE_NULL) int page) {
+        List<GetReservation> getReservationList = reservationService.getPageOfReservations(page);
+        return ResponseEntity.ok(getReservationList);
     }
 
     @PutMapping
