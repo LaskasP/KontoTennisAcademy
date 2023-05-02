@@ -12,6 +12,7 @@ import kontopoulos.rest.repos.CourtRepository;
 import kontopoulos.rest.repos.ReservationRepository;
 import kontopoulos.rest.services.reservation.ReservationService;
 import kontopoulos.rest.utils.AuthenticationFacade;
+import kontopoulos.rest.utils.TimeIntervalHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -43,6 +44,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
     private final AppUserRepository appUserRepository;
     private final CourtRepository courtRepository;
+    private final TimeIntervalHelper timeIntervalHelper;
     private final AuthenticationFacade authenticationFacade;
     private final ModelMapper modelMapper;
 
@@ -153,7 +155,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void validateTimeIntervals(LocalTime reservationStartTime, LocalTime reservationEndTime) throws InvalidRequestException {
-        boolean isReservationTimeInvalid = (reservationStartTime.compareTo(reservationEndTime) >= 0) || (reservationStartTime.until(reservationEndTime, ChronoUnit.HOURS) < 1);
+        boolean isReservationTimeInvalid = (reservationStartTime.compareTo(reservationEndTime) >= 0) || (reservationStartTime.until(reservationEndTime, ChronoUnit.HOURS) < 1) || !timeIntervalHelper.isTimeWithinPossibleValues(reservationStartTime) || !timeIntervalHelper.isTimeWithinPossibleValues(reservationEndTime);
         if (isReservationTimeInvalid) {
             throw new InvalidRequestException(RESERVATION_TIMES_ARE_NOT_VALID);
         }
