@@ -19,20 +19,9 @@ public class TimeIntervalHelper {
 //        this.timeSlotsList = timeIntervalsRepository.findAll();
     }
 
-    public Boolean isTimeWithinPossibleValues(LocalTime localTime) {
-        boolean result = false;
-        List<LocalTime> timeSlotsList = getTimeSlots();
-        if (timeSlotsList.contains(localTime)) result = true;
-        return result;
-    }
-
     @Cacheable("timeSlotsList")
     public List<LocalTime> getTimeSlots() {
         List<TimeIntervalEntity> timeIntervalEntityList = timeIntervalsRepository.findAll();
-        try {
-            Thread.sleep(5000);
-        } catch (Exception ignored) {
-        }
         List<LocalTime> timeSlotList = new ArrayList<>();
         for (TimeIntervalEntity timeIntervalEntity : timeIntervalEntityList) {
             timeSlotList.add(timeIntervalEntity.getTimeSlot());

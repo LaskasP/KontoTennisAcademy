@@ -155,7 +155,8 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void validateTimeIntervals(LocalTime reservationStartTime, LocalTime reservationEndTime) throws InvalidRequestException {
-        boolean isReservationTimeInvalid = (reservationStartTime.compareTo(reservationEndTime) >= 0) || (reservationStartTime.until(reservationEndTime, ChronoUnit.HOURS) < 1) || !timeIntervalHelper.isTimeWithinPossibleValues(reservationStartTime) || !timeIntervalHelper.isTimeWithinPossibleValues(reservationEndTime);
+        List<LocalTime> possibleTimeSlots = timeIntervalHelper.getTimeSlots();
+        boolean isReservationTimeInvalid = (reservationStartTime.compareTo(reservationEndTime) >= 0) || (reservationStartTime.until(reservationEndTime, ChronoUnit.HOURS) < 1) || !possibleTimeSlots.contains(reservationStartTime) || !possibleTimeSlots.contains(reservationEndTime);
         if (isReservationTimeInvalid) {
             throw new InvalidRequestException(RESERVATION_TIMES_ARE_NOT_VALID);
         }
