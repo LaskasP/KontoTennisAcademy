@@ -2,7 +2,6 @@ package kontopoulos.rest.services.reservation.impl;
 
 import kontopoulos.rest.exceptions.AppUserNotFoundException;
 import kontopoulos.rest.exceptions.InvalidRequestException;
-import kontopoulos.rest.models.common.rest.AppUserResponse;
 import kontopoulos.rest.models.reservation.entity.CourtEntity;
 import kontopoulos.rest.models.reservation.entity.ReservationEntity;
 import kontopoulos.rest.models.reservation.rest.*;
@@ -10,9 +9,9 @@ import kontopoulos.rest.models.security.entity.AppUserEntity;
 import kontopoulos.rest.repos.AppUserRepository;
 import kontopoulos.rest.repos.CourtRepository;
 import kontopoulos.rest.repos.ReservationRepository;
+import kontopoulos.rest.services.common.TimeIntervalService;
 import kontopoulos.rest.services.reservation.ReservationService;
 import kontopoulos.rest.utils.AuthenticationFacade;
-import kontopoulos.rest.utils.TimeIntervalHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -27,6 +26,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -44,7 +44,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
     private final AppUserRepository appUserRepository;
     private final CourtRepository courtRepository;
-    private final TimeIntervalHelper timeIntervalHelper;
+    private final TimeIntervalService timeIntervalService;
     private final AuthenticationFacade authenticationFacade;
     private final ModelMapper modelMapper;
 
@@ -91,9 +91,9 @@ public class ReservationServiceImpl implements ReservationService {
         for (ReservationEntity reservationEntity : reservationEntityList) {
             GetFullReservation getFullReservation = modelMapper.map(reservationEntity, GetFullReservation.class);
             getFullReservation.setCourtType(reservationEntity.getCourtEntity().getCourtType());
-            getFullReservation.setPlayer(modelMapper.map(reservationEntity.getAppUserEntity(), AppUserResponse.class));
+            getFullReservation.setPlayer(modelMapper.map(reservationEntity.getAppUserEntity(), GetFullReservationAppUserResponse.class));
             if (reservationEntity.getSecondAppUserEntity() != null) {
-                getFullReservation.setSecondPlayer(modelMapper.map(reservationEntity.getSecondAppUserEntity(), AppUserResponse.class));
+                getFullReservation.setSecondPlayer(modelMapper.map(reservationEntity.getSecondAppUserEntity(), GetFullReservationAppUserResponse.class));
             }
             getFullReservationList.add(getFullReservation);
         }
@@ -155,7 +155,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void validateTimeIntervals(LocalTime reservationStartTime, LocalTime reservationEndTime) throws InvalidRequestException {
-        List<LocalTime> possibleTimeSlots = timeIntervalHelper.getTimeSlots();
+        Set<LocalTime> possibleTimeSlots = timeIntervalService.getTimeSlots();
         boolean isReservationTimeInvalid = (reservationStartTime.compareTo(reservationEndTime) >= 0) || (reservationStartTime.until(reservationEndTime, ChronoUnit.HOURS) < 1) || !possibleTimeSlots.contains(reservationStartTime) || !possibleTimeSlots.contains(reservationEndTime);
         if (isReservationTimeInvalid) {
             throw new InvalidRequestException(RESERVATION_TIMES_ARE_NOT_VALID);

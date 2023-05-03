@@ -8,12 +8,15 @@ import lombok.Getter;
 
 import java.time.LocalTime;
 
+import static kontopoulos.rest.models.common.TimeIntervalConstant.TIME_VALUE;
+
 @Entity
 @Getter
 @Table(name = "time_intervals")
 public class TimeIntervalEntity {
+
     @Id
     private Long id;
-    @Column(name = "time_value")
+    @Column(name = TIME_VALUE)
     private LocalTime timeSlot;
 }

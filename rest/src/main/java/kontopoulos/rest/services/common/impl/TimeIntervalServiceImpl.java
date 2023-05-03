@@ -1,28 +1,31 @@
-package kontopoulos.rest.utils;
+package kontopoulos.rest.services.common.impl;
 
 import kontopoulos.rest.models.common.entity.TimeIntervalEntity;
 import kontopoulos.rest.repos.TimeIntervalsRepository;
+import kontopoulos.rest.services.common.TimeIntervalService;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-@Component
-public class TimeIntervalHelper {
+import static kontopoulos.rest.models.common.TimeIntervalConstant.TIME_VALUE;
+
+@Service
+public class TimeIntervalServiceImpl implements TimeIntervalService {
     private final TimeIntervalsRepository timeIntervalsRepository;
-//    private final List<TimeIntervalEntity> timeSlotsList;
 
-    public TimeIntervalHelper(TimeIntervalsRepository timeIntervalsRepository) {
+    public TimeIntervalServiceImpl(TimeIntervalsRepository timeIntervalsRepository) {
         this.timeIntervalsRepository = timeIntervalsRepository;
-//        this.timeSlotsList = timeIntervalsRepository.findAll();
     }
 
-    @Cacheable("timeSlotsList")
-    public List<LocalTime> getTimeSlots() {
+    @Override
+    @Cacheable(TIME_VALUE)
+    public Set<LocalTime> getTimeSlots() {
         List<TimeIntervalEntity> timeIntervalEntityList = timeIntervalsRepository.findAll();
-        List<LocalTime> timeSlotList = new ArrayList<>();
+        Set<LocalTime> timeSlotList = new HashSet<>();
         for (TimeIntervalEntity timeIntervalEntity : timeIntervalEntityList) {
             timeSlotList.add(timeIntervalEntity.getTimeSlot());
         }

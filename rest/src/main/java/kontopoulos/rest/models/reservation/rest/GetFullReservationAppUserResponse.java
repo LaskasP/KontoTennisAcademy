@@ -1,9 +1,9 @@
-package kontopoulos.rest.models.common.rest;
+package kontopoulos.rest.models.reservation.rest;
 
 import lombok.Data;
 
 @Data
-public class AppUserResponse {
+public class GetFullReservationAppUserResponse {
     private String username;
     private String firstName;
     private String lastName;
