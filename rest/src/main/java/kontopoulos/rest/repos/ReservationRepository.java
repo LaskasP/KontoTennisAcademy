@@ -11,7 +11,6 @@ import java.util.List;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<ReservationEntity, Long> {
-    List<ReservationEntity> findByAppUserEntity(AppUserEntity appUserEntity);
 
     List<ReservationEntity> findByAppUserEntityOrSecondAppUserEntity(AppUserEntity appUserEntity, AppUserEntity secondAppUserEntity);
 

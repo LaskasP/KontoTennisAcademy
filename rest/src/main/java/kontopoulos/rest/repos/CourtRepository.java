@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CourtRepository extends JpaRepository<CourtEntity, Long> {
-    public CourtEntity findFirstByCourtType(String courtType);
+    CourtEntity findFirstByCourtType(String courtType);
 }
