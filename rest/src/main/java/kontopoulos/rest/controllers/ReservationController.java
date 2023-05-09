@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static kontopoulos.rest.models.security.SecurityConstant.SECURED_ROLE_ADMIN;
+
 @RestController
 @RequestMapping("/reservation")
 @AllArgsConstructor
@@ -25,7 +27,6 @@ public class ReservationController {
     public static final String USERNAME_PATH = "/{username}";
     public static final String USERNAME = "username";
     public static final String USERNAME_ID_PATH = "/{username}/{id}";
-    public static final String SECURED_ROLE_ADMIN = "ROLE_ADMIN";
     public static final String PAGE_CANNOT_BE_NULL = "page cannot be null";
     public static final String ADMIN = "/admin";
     private ReservationService reservationService;

@@ -1,7 +1,6 @@
 package kontopoulos.rest.configs;
 
 import kontopoulos.rest.filters.JWTValidatorFilter;
-import kontopoulos.rest.models.security.SecurityConstant;
 import kontopoulos.rest.utils.JWTAuthenticationEntryPoint;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import java.util.Collections;
 import java.util.List;
 
+import static kontopoulos.rest.models.security.SecurityConstant.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Configuration
@@ -48,7 +48,8 @@ public class SecurityConfig {
             config.setMaxAge(3600L);
             return config;
         });
-        http.authorizeHttpRequests().requestMatchers(SecurityConstant.PUBLIC_URLS).permitAll();
+        http.authorizeHttpRequests().requestMatchers(PUBLIC_URLS).permitAll();
+        http.authorizeHttpRequests().requestMatchers(SYSTEM_ADMIN_URLS).hasRole(SECURED_ROLE_SYSTEM_ADMIN);
         http.authorizeHttpRequests().anyRequest().authenticated();
         http.authenticationProvider(authenticationProvider());
         http.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint);
