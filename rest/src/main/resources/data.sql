@@ -52,3 +52,8 @@ insert into courts (id, court_type)
 values (1, "tennis_1"),
        (2, "tennis_2"),
        (3, "padel")^;
+
+insert into application_user_roles (id, app_user_role_enum)
+values (1, "ROLE_USER"),
+       (2, "ROLE_ADMIN"),
+       (3, "ROLE_SYSTEM_ADMIN")^;

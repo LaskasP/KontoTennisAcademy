@@ -12,7 +12,7 @@ drop table if exists courts^;
 create table application_user_roles
 (
     id            bigint not null,
-    app_user_role varchar(20),
+    app_user_role_enum varchar(20),
     primary key (id)
 )^;
 

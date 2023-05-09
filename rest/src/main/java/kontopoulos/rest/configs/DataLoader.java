@@ -5,6 +5,7 @@ import kontopoulos.rest.models.security.entity.RoleEntity;
 import kontopoulos.rest.models.security.lov.AppUserRoleEnum;
 import kontopoulos.rest.repos.AppUserRepository;
 import kontopoulos.rest.repos.RoleRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,12 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
     private final PasswordEncoder passwordEncoder;
     private boolean alreadySetup = false;
 
+    @Value("${admin.pass}")
+    private String password;
+
+    @Value("${admin.email}")
+    private String email;
+
     public DataLoader(AppUserRepository appUserRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.appUserRepository = appUserRepository;
         this.roleRepository = roleRepository;
@@ -35,13 +42,14 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         }
         RoleEntity userRole = createRoleIfNotFound(AppUserRoleEnum.ROLE_USER);
         RoleEntity adminRole = createRoleIfNotFound(AppUserRoleEnum.ROLE_ADMIN);
+        RoleEntity sysAdminRole = createRoleIfNotFound(AppUserRoleEnum.ROLE_SYSTEM_ADMIN);
         AppUserEntity user = new AppUserEntity();
-        user.setFirstName("Fanis");
-        user.setLastName("Kontopoulos");
-        user.setUsername("FanisKonto");
-        user.setPassword(passwordEncoder.encode("IRullzU!"));
-        user.setEmail("fanis@kontopoulosacademy.com");
-        user.setRoleEntities(Set.of(userRole, adminRole));
+        user.setFirstName("Sys");
+        user.setLastName("Admin");
+        user.setUsername("sysAdmin");
+        user.setPassword(passwordEncoder.encode(password));
+        user.setEmail(email);
+        user.setRoleEntities(Set.of(userRole, adminRole, sysAdminRole));
         user.setActive(true);
         user.setNotLocked(false);
         appUserRepository.save(user);

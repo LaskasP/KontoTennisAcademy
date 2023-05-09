@@ -49,7 +49,7 @@ public class SecurityConfig {
             return config;
         });
         http.authorizeHttpRequests().requestMatchers(PUBLIC_URLS).permitAll();
-        http.authorizeHttpRequests().requestMatchers(SYSTEM_ADMIN_URLS).hasRole(SECURED_ROLE_SYSTEM_ADMIN);
+        http.authorizeHttpRequests().requestMatchers(SYSTEM_ADMIN_URLS).hasAuthority(SECURED_ROLE_SYSTEM_ADMIN);
         http.authorizeHttpRequests().anyRequest().authenticated();
         http.authenticationProvider(authenticationProvider());
         http.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint);
