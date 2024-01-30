@@ -1,13 +1,14 @@
 <template>
   <header>
     <nav>
-      <div class = "wrapper"><img
-        alt="KTA logo"
-        class="logo"
-        src="@/assets/KontopoulosAcademy.png"
-        width="45"
-        height="45"
-      />
+      <div class="wrapper">
+        <img
+          alt="KTA logo"
+          class="logo"
+          src="@/assets/KontopoulosAcademy.png"
+          width="45"
+          height="45"
+        />
         <h1><RouterLink to="/">KTA</RouterLink></h1>
       </div>
       <ul>
@@ -32,7 +33,7 @@ export default {
 </script>
 
 <style scoped>
-div{
+div {
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -94,4 +95,5 @@ header ul {
 
 li {
   margin: 0 0.5rem;
-}</style>
+}
+</style>

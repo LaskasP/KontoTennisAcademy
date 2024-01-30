@@ -1,5 +1,5 @@
 <template>
-  <h1>Register View KTA</h1>
+
 </template>
 
 <script>

@@ -9,10 +9,10 @@ import lombok.Data;
 public class RegisterRequest {
     @NotBlank(message = "firstName cannot be blank.")
     @Size(max = 100)
-    private String firstName;
+    private String firstname;
     @NotBlank(message = "lastName cannot be blank.")
     @Size(max = 100)
-    private String lastName;
+    private String lastname;
     @NotBlank(message = "username must be between 5 and 25 characters long.")
     @Size(min = 5, max = 25)
     private String username;

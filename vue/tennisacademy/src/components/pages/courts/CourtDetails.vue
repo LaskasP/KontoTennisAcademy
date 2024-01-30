@@ -1,11 +1,11 @@
 <script>
 export default {
-name: "CourtDetails"
-}
+  name: "CourtDetails"
+};
 </script>
 
 <template>
-  $END$
+
 </template>
 
 <style scoped>
