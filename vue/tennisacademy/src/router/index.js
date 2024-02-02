@@ -2,11 +2,10 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/components/views/HomeView.vue";
 import ReservationView from "@/components/views/ReservationView.vue";
 import NotFoundView from "@/components/views/NotFoundView.vue";
-import UserLogin from "@/components/views/auth/UserLogin.vue";
 
 const CourtsView = () => import("@/components/views/CourtsView.vue");
 const ProfileView = () => import("@/components/views/ProfileView.vue");
-const RegisterView = () => import("@/components/views/RegisterView.vue");
+const AuthView = () => import("@/components/views/AuthView.vue");
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,14 +31,9 @@ const router = createRouter({
       component: ProfileView
     },
     {
-      path: "/register",
-      name: "register",
-      component: RegisterView
-    },
-    {
-      path: "/login",
-      name: "login",
-      component: UserLogin
+      path: "/auth",
+      name: "auth",
+      component: AuthView
     },
     {
       path: "/:notFound(.*)",
