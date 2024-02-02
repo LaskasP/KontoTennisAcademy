@@ -1,12 +1,18 @@
 <script>
 import { useAuthStore } from "@/stores/modules/auth/index.js";
+import BaseCard from "@/components/base/BaseCard.vue";
+import BaseButton from "@/components/base/BaseButton.vue";
 
 export default {
   name: "AuthView",
+  components: { BaseButton, BaseCard },
   data() {
     return {
       email: "",
       password: "",
+      firstname: "",
+      lastname: "",
+      username: "",
       isFormInValid: false,
       mode: "login"
     };
@@ -21,9 +27,9 @@ export default {
         useAuthStore().signup({
           email: this.email,
           password: this.password,
-          firstname: "Petros",
-          lastname: "Laskas",
-          username: "Skouna"
+          firstname: this.firstname,
+          lastname: this.lastname,
+          username: this.username
         });
       }
     },
@@ -59,7 +65,7 @@ export default {
 </script>
 
 <template>
-  <div class="base-card">
+  <base-card>
     <form @submit.prevent="submitForm">
       <div class="form-control">
         <label for="email">E-Mail</label>
@@ -69,11 +75,58 @@ export default {
         <label for="password">Password</label>
         <input type="password" id="password" v-model.trim="password" />
       </div>
+      <div v-if="mode === 'signup'">
+        <div class="form-control">
+          <label for="username">Username</label>
+          <input type="text" id="username" v-model.trim="username" />
+        </div>
+        <div class="form-control">
+          <label for="firstname">Firstname</label>
+          <input type="text" id="firstname" v-model.trim="firstname" />
+        </div>
+        <div class="form-control">
+          <label for="lastname">Lastname</label>
+          <input type="text" id="lastname" v-model.trim="lastname" />
+        </div>
+      </div>
       <p v-if="isFormInValid">Please enter a valid email and password</p>
-      <button>{{ submitButtonCaption }}</button>
-      <button type="button" mode="flat" @click="switchMode">{{ modeButtonCaption }}</button>
+      <base-button>{{ submitButtonCaption }}</base-button>
+      <base-button type="button" mode="flat" @click="switchMode">{{ modeButtonCaption }}</base-button>
     </form>
-  </div>
+  </base-card>
 </template>
 
-<style scoped></style>
+<style scoped>
+form {
+  margin: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.form-control {
+  margin: 0.5rem 0;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+input,
+textarea {
+  display: block;
+  width: 100%;
+  font: inherit;
+  border: 1px solid #ccc;
+  padding: 0.15rem;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #3d008d;
+  background-color: #faf6ff;
+  outline: none;
+}
+</style>

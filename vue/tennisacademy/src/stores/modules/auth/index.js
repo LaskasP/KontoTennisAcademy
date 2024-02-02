@@ -22,7 +22,8 @@ export const useAuthStore = defineStore("auth", {
           username: payload.username,
           firstname: payload.firstname,
           lastname: payload.lastname
-        })
+        }),
+        headers: { "Content-Type": "application/json" }
       });
       const responseData = await response.json();
       if (response.status !== 201) {
