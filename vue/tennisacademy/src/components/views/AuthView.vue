@@ -2,36 +2,50 @@
 import { useAuthStore } from "@/stores/modules/auth/index.js";
 import BaseCard from "@/components/base/BaseCard.vue";
 import BaseButton from "@/components/base/BaseButton.vue";
+import BaseDialog from "@/components/base/BaseDialog.vue";
 
 export default {
   name: "AuthView",
-  components: { BaseButton, BaseCard },
+  components: { BaseDialog, BaseButton, BaseCard },
   data() {
     return {
+      authStore: useAuthStore(),
       email: "",
       password: "",
       firstname: "",
       lastname: "",
       username: "",
       isFormInValid: false,
-      mode: "login"
+      mode: "login",
+      isLoading: false,
+      error: null
     };
   },
   methods: {
-    submitForm() {
+    async submitForm() {
       this.isFormInValid =
-        this.email === "" || !this.email.includes("@") || this.password.length < 6;
-      if (this.mode === "login" && !this.isFormInValid) {
-        // ....
-      } else if(this.mode === "signup" && !this.isFormInValid){
-        useAuthStore().signup({
-          email: this.email,
-          password: this.password,
-          firstname: this.firstname,
-          lastname: this.lastname,
-          username: this.username
-        });
+        (this.email === "" || !this.email.includes("@") || this.password.length < 6) && this.mode === "signup";
+      try {
+        if (this.mode === "login") {
+          this.isLoading = true;
+          await this.authStore.login({
+            username: this.username,
+            password: this.password
+          });
+        } else if (this.mode === "signup" && !this.isFormInValid) {
+          this.isLoading = true;
+          await this.authStore.signup({
+            email: this.email,
+            password: this.password,
+            firstname: this.firstname,
+            lastname: this.lastname,
+            username: this.username
+          });
+        }
+      } catch (err) {
+        this.error = err.message;
       }
+      this.isLoading = false;
     },
     switchMode() {
       if (this.mode === "login") {
@@ -39,6 +53,9 @@ export default {
       } else {
         this.mode = "login";
       }
+    },
+    handleError() {
+      this.error = null;
     }
   },
   computed: {
@@ -65,35 +82,43 @@ export default {
 </script>
 
 <template>
-  <base-card>
-    <form @submit.prevent="submitForm">
-      <div class="form-control">
-        <label for="email">E-Mail</label>
-        <input type="email" id="email" v-model.trim="email" />
-      </div>
-      <div class="form-control">
-        <label for="password">Password</label>
-        <input type="password" id="password" v-model.trim="password" />
-      </div>
-      <div v-if="mode === 'signup'">
+  <div>
+    <base-dialog :show="!!error" title="Error occurred while authenticating" @close="handleError">
+      <p>{{ error }}</p>
+    </base-dialog>
+    <base-dialog :show="isLoading" title="Loading..." fixed>
+    </base-dialog>
+    <base-card>
+      <form @submit.prevent="submitForm">
         <div class="form-control">
           <label for="username">Username</label>
           <input type="text" id="username" v-model.trim="username" />
         </div>
         <div class="form-control">
-          <label for="firstname">Firstname</label>
-          <input type="text" id="firstname" v-model.trim="firstname" />
+          <label for="password">Password</label>
+          <input type="password" id="password" v-model.trim="password" />
         </div>
-        <div class="form-control">
-          <label for="lastname">Lastname</label>
-          <input type="text" id="lastname" v-model.trim="lastname" />
+        <div v-if="mode === 'signup'">
+          <div class="form-control">
+            <label for="email">E-Mail</label>
+            <input type="email" id="email" v-model.trim="email" />
+          </div>
+          <div class="form-control">
+            <label for="firstname">Firstname</label>
+            <input type="text" id="firstname" v-model.trim="firstname" />
+          </div>
+          <div class="form-control">
+            <label for="lastname">Lastname</label>
+            <input type="text" id="lastname" v-model.trim="lastname" />
+          </div>
         </div>
-      </div>
-      <p v-if="isFormInValid">Please enter a valid email and password</p>
-      <base-button>{{ submitButtonCaption }}</base-button>
-      <base-button type="button" mode="flat" @click="switchMode">{{ modeButtonCaption }}</base-button>
-    </form>
-  </base-card>
+        <p v-if="isFormInValid">Please enter a valid email and password</p>
+        <base-button>{{ submitButtonCaption }}</base-button>
+        <base-button type="button" mode="flat" @click="switchMode">{{ modeButtonCaption }}</base-button>
+      </form>
+    </base-card>
+  </div>
+
 </template>
 
 <style scoped>
