@@ -5,11 +5,13 @@
         <img
           alt="KTA logo"
           class="logo"
+          height="45"
           src="@/assets/KontopoulosAcademy.png"
           width="45"
-          height="45"
         />
-        <h1><RouterLink to="/">KTA</RouterLink></h1>
+        <h1>
+          <RouterLink to="/">KTA</RouterLink>
+        </h1>
       </div>
       <ul>
         <li>
@@ -38,6 +40,7 @@ div {
   justify-content: flex-start;
   align-items: center;
 }
+
 header {
   width: 100%;
   height: 5rem;
