@@ -87,34 +87,34 @@ export default {
     <base-dialog :show="!!error" title="Error occurred while authenticating" @close="handleError">
       <p>{{ error }}</p>
     </base-dialog>
-    <base-dialog :show="isLoading" title="Loading..." fixed></base-dialog>
+    <base-dialog :show="isLoading" fixed title="Loading..."></base-dialog>
     <base-card>
       <form @submit.prevent="submitForm">
         <div class="form-control">
           <label for="username">Username</label>
-          <input type="text" id="username" v-model.trim="username" />
+          <input id="username" v-model.trim="username" type="text" />
         </div>
         <div class="form-control">
           <label for="password">Password</label>
-          <input type="password" id="password" v-model.trim="password" />
+          <input id="password" v-model.trim="password" type="password" />
         </div>
         <div v-if="mode === 'signup'">
           <div class="form-control">
             <label for="email">E-Mail</label>
-            <input type="email" id="email" v-model.trim="email" />
+            <input id="email" v-model.trim="email" type="email" />
           </div>
           <div class="form-control">
             <label for="firstname">Firstname</label>
-            <input type="text" id="firstname" v-model.trim="firstname" />
+            <input id="firstname" v-model.trim="firstname" type="text" />
           </div>
           <div class="form-control">
             <label for="lastname">Lastname</label>
-            <input type="text" id="lastname" v-model.trim="lastname" />
+            <input id="lastname" v-model.trim="lastname" type="text" />
           </div>
         </div>
         <p v-if="isFormInValid">Please enter a valid email and password</p>
         <base-button>{{ submitButtonCaption }}</base-button>
-        <base-button type="button" mode="flat" @click="switchMode"
+        <base-button mode="flat" type="button" @click="switchMode"
           >{{ modeButtonCaption }}
         </base-button>
       </form>
