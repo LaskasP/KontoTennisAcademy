@@ -1,5 +1,5 @@
 <script>
-import { useAuthStore } from "@/stores/modules/auth/index.js";
+import { useAuthStore } from "@/stores/auth/auth.js";
 import BaseCard from "@/components/base/BaseCard.vue";
 import BaseButton from "@/components/base/BaseButton.vue";
 import BaseDialog from "@/components/base/BaseDialog.vue";
@@ -24,7 +24,8 @@ export default {
   methods: {
     async submitForm() {
       this.isFormInValid =
-        (this.email === "" || !this.email.includes("@") || this.password.length < 6) && this.mode === "signup";
+        (this.email === "" || !this.email.includes("@") || this.password.length < 6) &&
+        this.mode === "signup";
       try {
         if (this.mode === "login") {
           this.isLoading = true;
@@ -86,8 +87,7 @@ export default {
     <base-dialog :show="!!error" title="Error occurred while authenticating" @close="handleError">
       <p>{{ error }}</p>
     </base-dialog>
-    <base-dialog :show="isLoading" title="Loading..." fixed>
-    </base-dialog>
+    <base-dialog :show="isLoading" title="Loading..." fixed></base-dialog>
     <base-card>
       <form @submit.prevent="submitForm">
         <div class="form-control">
@@ -114,11 +114,12 @@ export default {
         </div>
         <p v-if="isFormInValid">Please enter a valid email and password</p>
         <base-button>{{ submitButtonCaption }}</base-button>
-        <base-button type="button" mode="flat" @click="switchMode">{{ modeButtonCaption }}</base-button>
+        <base-button type="button" mode="flat" @click="switchMode"
+          >{{ modeButtonCaption }}
+        </base-button>
       </form>
     </base-card>
   </div>
-
 </template>
 
 <style scoped>

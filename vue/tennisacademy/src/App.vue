@@ -13,5 +13,4 @@ export default {
   <TheFooter></TheFooter>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

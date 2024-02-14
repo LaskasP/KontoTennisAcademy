@@ -1,4 +1,4 @@
-import { defineStore } from "pinia";
+import { defineStore, getActivePinia } from "pinia";
 
 export const useAuthStore = defineStore("auth", {
   state: () => {
@@ -8,10 +8,21 @@ export const useAuthStore = defineStore("auth", {
       lastname: "",
       email: "",
       roles: [],
-      token: null
+      token: null,
+      isLoggedIn: false
     };
   },
-  getters: {},
+  getters: {
+    getToken(state) {
+      return state.token;
+    },
+    getUsername(state) {
+      return state.username;
+    },
+    isUserLoggedIn(state) {
+      return state.isLoggedIn();
+    }
+  },
   actions: {
     async login(payload) {
       const response = await this.postAuth("http://localhost:8081/auth/login", payload);
@@ -35,6 +46,7 @@ export const useAuthStore = defineStore("auth", {
       this.username = responseData.username;
       this.email = responseData.email;
       this.roles = responseData.roles;
+      this.isLoggedIn = true;
       this.token = token;
     },
     async postAuth(url, payload) {
@@ -45,6 +57,19 @@ export const useAuthStore = defineStore("auth", {
         }),
         headers: { "Content-Type": "application/json" }
       });
+    },
+    async logout() {
+      if (this.isLoggedIn) {
+        const response = await fetch("http://localhost:8081/auth/logout", {
+          method: "GET"
+        });
+        if (response.status !== 200) {
+          throw new Error("Failed to logout.");
+        }
+        const pinia = getActivePinia();
+        pinia._s.forEach((store) => store.$reset());
+        this.isLoggedIn = false;
+      }
     }
   }
 });
