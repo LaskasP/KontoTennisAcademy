@@ -101,7 +101,7 @@ BEGIN
     WHERE court_id = NEW.court_id AND reservation_date = NEW.reservation_date
       AND (NEW.reservation_start_time < reservation_end_time AND NEW.reservation_end_time > reservation_start_time);
     IF rowcount > 0 THEN
-        signal sqlstate '23000' set message_text = 'Reservation time intervals overlap other time intervals';
+        signal sqlstate '23000' set message_text = 'Reservation time intervals overlap another reservation time intervals';
 END IF;
 END^;
 
