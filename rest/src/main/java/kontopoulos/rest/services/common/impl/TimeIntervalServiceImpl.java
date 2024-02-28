@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static kontopoulos.rest.models.common.TimeIntervalConstant.TIME_VALUE;
+import static kontopoulos.rest.models.common.TimeIntervalConstant.TIME_SLOT_CACHE;
 
 @Service
 public class TimeIntervalServiceImpl implements TimeIntervalService {
@@ -22,7 +22,7 @@ public class TimeIntervalServiceImpl implements TimeIntervalService {
     }
 
     @Override
-    @Cacheable(TIME_VALUE)
+    @Cacheable(TIME_SLOT_CACHE)
     public Set<LocalTime> getTimeSlots() {
         List<TimeIntervalEntity> timeIntervalEntityList = timeIntervalsRepository.findAll();
         Set<LocalTime> timeSlotList = new HashSet<>();
