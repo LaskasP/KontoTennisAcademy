@@ -40,15 +40,6 @@ export const useAuthStore = defineStore("auth", {
       }
       this.setUser(responseData, response.headers.get("Authorization"));
     },
-    setUser(responseData, token) {
-      this.firstname = responseData.firstname;
-      this.lastname = responseData.lastname;
-      this.username = responseData.username;
-      this.email = responseData.email;
-      this.roles = responseData.roles;
-      this.isLoggedIn = true;
-      this.token = token;
-    },
     async postAuth(url, payload) {
       return await fetch(url, {
         method: "POST",
@@ -70,6 +61,15 @@ export const useAuthStore = defineStore("auth", {
         pinia._s.forEach((store) => store.$reset());
         this.isLoggedIn = false;
       }
+    },
+    setUser(responseData, token) {
+      this.firstname = responseData.firstname;
+      this.lastname = responseData.lastname;
+      this.username = responseData.username;
+      this.email = responseData.email;
+      this.roles = responseData.roles;
+      this.isLoggedIn = true;
+      this.token = token;
     }
   }
 });
