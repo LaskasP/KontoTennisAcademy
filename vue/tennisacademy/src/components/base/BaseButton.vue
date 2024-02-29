@@ -26,7 +26,7 @@ export default {
   <button v-if="!link" :class="mode">
     <slot></slot>
   </button>
-  <router-link v-else :to="to" :class="mode">
+  <router-link v-else :class="mode" :to="to">
     <slot></slot>
   </router-link>
 </template>
@@ -41,7 +41,6 @@ a {
   border: 1px solid #3a0061;
   color: white;
   cursor: pointer;
-  border-radius: 30px;
   margin-right: 0.5rem;
   display: inline-block;
 }

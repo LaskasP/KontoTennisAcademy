@@ -3,9 +3,7 @@ import { useAuthStore } from "@/stores/auth/auth.js";
 
 export const useReservationStore = defineStore("reservations", {
   state: () => {
-    return {
-      reservations: []
-    };
+    return { reservations: [] };
   },
   getters: {
     getReservations(state) {
@@ -14,11 +12,13 @@ export const useReservationStore = defineStore("reservations", {
   },
   actions: {
     async createReservation(payload) {
-      if (useAuthStore().isUserLoggedIn()) {
+      console.log(useAuthStore().isUserLoggedIn);
+      if (useAuthStore().isUserLoggedIn) {
         const response = await this.postAuth("http://localhost:8081/reservation", payload);
         const responseData = await response.json();
         if (response.status !== 201) {
-          throw new Error(responseData.messages[0] || "Failed to create reservation.");
+          console.log(responseData);
+          throw new Error(responseData.messages || "Failed to create reservation.");
         }
         this.reservations.push(responseData);
       }
@@ -28,10 +28,11 @@ export const useReservationStore = defineStore("reservations", {
         method: "POST",
         body: JSON.stringify({
           ...payload,
-          username: useAuthStore().getUsername()
+          username: useAuthStore().getUsername
         }),
-        headers: { "Content-Type": "application/json", Authorization: useAuthStore().getToken() }
+        headers: { "Content-Type": "application/json", Authorization: useAuthStore().getToken }
       });
     }
-  }
+  },
+  persist: true
 });

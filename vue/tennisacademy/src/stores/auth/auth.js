@@ -20,7 +20,7 @@ export const useAuthStore = defineStore("auth", {
       return state.username;
     },
     isUserLoggedIn(state) {
-      return state.isLoggedIn();
+      return state.isLoggedIn;
     }
   },
   actions: {
@@ -71,5 +71,6 @@ export const useAuthStore = defineStore("auth", {
       this.isLoggedIn = true;
       this.token = token;
     }
-  }
+  },
+  persist: true
 });
