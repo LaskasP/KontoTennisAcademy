@@ -1,6 +1,8 @@
 <template>
-  <h1>Reservation View KTA</h1>
-  <base-button mode="outline" @click="reserve">Reserve Court</base-button>
+  <div class="menu">
+    <h1>Reservation View KTA</h1>
+    <base-button @click="reserve">Reserve Court</base-button>
+  </div>
 </template>
 
 <script>
@@ -26,4 +28,10 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+</style>

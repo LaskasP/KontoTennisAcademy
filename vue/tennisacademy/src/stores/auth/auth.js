@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import { defineStore, getActivePinia } from "pinia";
 
 export const useAuthStore = defineStore("auth", {
@@ -25,7 +27,13 @@ export const useAuthStore = defineStore("auth", {
   },
   actions: {
     async login(payload) {
-      const response = await this.postAuth("http://localhost:8081/auth/login", payload);
+      const response = await fetch("http://localhost:8081/auth/login", {
+        method: "POST",
+        body: JSON.stringify({
+          ...payload
+        }),
+        headers: { "Content-Type": "application/json" }
+      });
       const responseData = await response.json();
       if (response.status !== 200) {
         throw new Error(responseData.messages[0] || "Failed to login.");
@@ -33,21 +41,18 @@ export const useAuthStore = defineStore("auth", {
       this.setUser(responseData, response.headers.get("Authorization"));
     },
     async signup(payload) {
-      const response = await this.postAuth("http://localhost:8081/auth/registration", payload);
-      const responseData = await response.json();
-      if (response.status !== 201) {
-        throw new Error(responseData.messages[0] || "Failed to signup.");
-      }
-      this.setUser(responseData, response.headers.get("Authorization"));
-    },
-    async postAuth(url, payload) {
-      return await fetch(url, {
+      const response = await fetch("http://localhost:8081/auth/registration", {
         method: "POST",
         body: JSON.stringify({
           ...payload
         }),
         headers: { "Content-Type": "application/json" }
       });
+      const responseData = await response.json();
+      if (response.status !== 201) {
+        throw new Error(responseData.messages[0] || "Failed to signup.");
+      }
+      this.setUser(responseData, response.headers.get("Authorization"));
     },
     async logout() {
       if (this.isLoggedIn) {

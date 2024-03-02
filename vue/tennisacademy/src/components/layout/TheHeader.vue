@@ -15,10 +15,13 @@
       </div>
       <ul>
         <li>
-          <RouterLink to="/">Home</RouterLink>
+          <base-button link mode="outline" to="/">Home</base-button>
         </li>
         <li>
-          <RouterLink to="/courts">Courts</RouterLink>
+          <base-button link mode="outline" to="/courts">Courts</base-button>
+        </li>
+        <li>
+          <base-button link mode="outline" to="/reservation">Reserve</base-button>
         </li>
       </ul>
     </nav>

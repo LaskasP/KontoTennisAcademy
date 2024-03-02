@@ -1,3 +1,5 @@
+// noinspection JSUnresolvedReference
+
 import { defineStore } from "pinia";
 import { useAuthStore } from "@/stores/auth/auth.js";
 
@@ -8,13 +10,22 @@ export const useReservationStore = defineStore("reservations", {
   getters: {
     getReservations(state) {
       return state.reservations;
+    },
+    hasAnyReservation(state) {
+      return state.reservations.length > 0;
     }
   },
   actions: {
     async createReservation(payload) {
-      console.log(useAuthStore().isUserLoggedIn);
       if (useAuthStore().isUserLoggedIn) {
-        const response = await this.postAuth("http://localhost:8081/reservation", payload);
+        const response = await fetch("http://localhost:8081/reservation", {
+          method: "POST",
+          body: JSON.stringify({
+            ...payload,
+            username: useAuthStore().getUsername
+          }),
+          headers: { "Content-Type": "application/json", Authorization: useAuthStore().getToken }
+        });
         const responseData = await response.json();
         if (response.status !== 201) {
           console.log(responseData);
@@ -22,16 +33,6 @@ export const useReservationStore = defineStore("reservations", {
         }
         this.reservations.push(responseData);
       }
-    },
-    async postAuth(url, payload) {
-      return await fetch(url, {
-        method: "POST",
-        body: JSON.stringify({
-          ...payload,
-          username: useAuthStore().getUsername
-        }),
-        headers: { "Content-Type": "application/json", Authorization: useAuthStore().getToken }
-      });
     }
   },
   persist: true

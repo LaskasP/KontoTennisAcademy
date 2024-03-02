@@ -1,3 +1,4 @@
+<!--suppress ALL -->
 <script>
 export default {
   name: "BaseButton",
@@ -37,8 +38,8 @@ a {
   text-decoration: none;
   padding: 0.75rem 1.5rem;
   font: inherit;
-  background-color: #3a0061;
-  border: 1px solid #3a0061;
+  background-color: #270041;
+  border: 1px solid #270041;
   color: white;
   cursor: pointer;
   margin-right: 0.5rem;
@@ -49,26 +50,17 @@ a:hover,
 a:active,
 button:hover,
 button:active {
-  background-color: #270041;
-  border-color: #270041;
-}
-
-.flat {
-  background-color: transparent;
-  color: #3a0061;
-  border: none;
+  background-color: rgba(58, 0, 97, 0.11);
+  color: black;
 }
 
 .outline {
   background-color: transparent;
-  border-color: #270041;
-  color: #270041;
 }
 
-.flat:hover,
-.flat:active,
 .outline:hover,
 .outline:active {
-  background-color: #edd2ff;
+  border-color: #f391e3;
+  background-color: transparent;
 }
 </style>
