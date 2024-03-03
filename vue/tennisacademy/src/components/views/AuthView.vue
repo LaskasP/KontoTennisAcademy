@@ -83,12 +83,13 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="login">
     <base-dialog :show="!!error" title="Error occurred while authenticating" @close="handleError">
       <p>{{ error }}</p>
     </base-dialog>
     <base-dialog :show="isLoading" fixed title="Loading..."></base-dialog>
     <base-card>
+      <h1>Login</h1>
       <form @submit.prevent="submitForm">
         <div class="form-control">
           <label for="username">Username</label>
@@ -123,6 +124,11 @@ export default {
 </template>
 
 <style scoped>
+.login {
+  display: flex;
+  min-height: 800px;
+}
+
 form {
   margin: 1rem;
   padding: 1rem;
