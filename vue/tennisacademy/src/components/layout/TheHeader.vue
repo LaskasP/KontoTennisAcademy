@@ -23,6 +23,9 @@
         <li>
           <base-button link mode="outline" to="/reservation">Reserve</base-button>
         </li>
+        <li v-if="isUserLoggedIn">
+          <base-button mode="outline" @click="logout">Logout</base-button>
+        </li>
       </ul>
     </nav>
   </header>
@@ -30,10 +33,21 @@
 
 <script>
 import { RouterLink } from "vue-router";
+import { useAuthStore } from "@/stores/auth/auth.js";
+import { mapState } from "pinia";
 
 export default {
   name: "TheHeader",
-  components: { RouterLink }
+  components: { RouterLink },
+  computed: {
+    ...mapState(useAuthStore, ["isUserLoggedIn"])
+  },
+  methods: {
+    logout() {
+      useAuthStore().logout();
+      this.$router.replace("/");
+    }
+  }
 };
 </script>
 
@@ -55,7 +69,6 @@ header {
 
 header a {
   text-decoration: none;
-  color: #f391e3;
   display: inline-block;
   padding: 0.75rem 1.5rem;
   border: 1px solid transparent;

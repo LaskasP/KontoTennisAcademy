@@ -43,6 +43,8 @@ export default {
             username: this.username
           });
         }
+        const redirectURL = "/" + (this.$route.query.redirect || "");
+        this.$router.replace(redirectURL);
       } catch (err) {
         this.error = err.message;
       }

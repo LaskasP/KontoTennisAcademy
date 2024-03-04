@@ -56,12 +56,16 @@ export const useAuthStore = defineStore("auth", {
     },
     async logout() {
       if (this.isLoggedIn) {
-        const response = await fetch("http://localhost:8081/auth/logout", {
-          method: "GET"
-        });
-        if (response.status !== 200) {
-          throw new Error("Failed to logout.");
-        }
+        await fetch(
+          "http://localhost:8081/auth/logout" + "?username=" + useAuthStore().getUsername,
+          {
+            method: "GET",
+            headers: { Authorization: useAuthStore().getToken }
+          }
+        );
+        // if (response.status !== 200) {
+        //   throw new Error("Failed to logout.");
+        // }
         const pinia = getActivePinia();
         pinia._s.forEach((store) => store.$reset());
         this.isLoggedIn = false;

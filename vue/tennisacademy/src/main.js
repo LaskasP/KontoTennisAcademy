@@ -9,10 +9,9 @@ import router from "./router";
 import BaseCard from "@/components/base/BaseCard.vue";
 import BaseButton from "@/components/base/BaseButton.vue";
 
-const app = createApp(App);
-
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
+const app = createApp(App);
 app.use(pinia);
 app.use(router);
 
