@@ -31,7 +31,9 @@ public class AuthController {
     private static final String LOGIN = "/login";
     private static final String REFRESHMENT = "/refreshment";
     private static final String LOGOUT = "/logout";
+
     private AppUserService appUserService;
+
     private RefreshTokenService refreshTokenService;
 
     @PostMapping(REGISTRATION)
