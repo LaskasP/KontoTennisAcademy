@@ -8,8 +8,8 @@ public class SecurityConstant {
     public static final String USERNAME = "username";
     public static final String AUTHORITIES = "authorities";
     public static final String DELIMITER = ",";
-    public static final long JWT_EXPIRATION_MS = 1800000L;
-    public static final long JWT_REFRESH_TOKEN_EXPIRATION_MS = 8640000000L; //100 days
+    public static final long JWT_EXPIRATION_MS = 300000L; //5 minutes
+    public static final long JWT_REFRESH_TOKEN_EXPIRATION_MS = 864000000L; //10 days
     public static final String JWT_ISSUER = "skouma";
     public static final String TOKEN_CANNOT_BE_VERIFIED = "Token cannot be verified";
     public static final String FORBIDDEN_MESSAGE = "You need to login first";

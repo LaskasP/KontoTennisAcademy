@@ -41,7 +41,8 @@ export const useAuthStore = defineStore("auth", {
       if (response.status !== 200) {
         throw new Error(responseData.messages[0] || "Failed to login.");
       }
-      this.setUser(responseData, response.headers);
+      this.setUser(responseData);
+      this.setAuth(response.headers);
     },
     async signup(payload) {
       const response = await fetch("http://localhost:8081/auth/registration", {
@@ -55,7 +56,8 @@ export const useAuthStore = defineStore("auth", {
       if (response.status !== 201) {
         throw new Error(responseData.messages[0] || "Failed to signup.");
       }
-      this.setUser(responseData, response.headers);
+      this.setUser(responseData);
+      this.setAuth(response.headers);
     },
     async logout() {
       if (this.isLoggedIn) {
@@ -63,9 +65,6 @@ export const useAuthStore = defineStore("auth", {
           method: "GET",
           headers: { Authorization: this.token }
         });
-        // if (response.status !== 200) {
-        //   throw new Error("Failed to logout.");
-        // }
         const pinia = getActivePinia();
         pinia._s.forEach((store) => store.$reset());
       }
@@ -75,27 +74,27 @@ export const useAuthStore = defineStore("auth", {
         method: "GET",
         headers: { "Authorization-Refresh": this.refreshToken }
       });
-      const responseData = await response.json();
       if (!response.ok) {
-        throw new Error(responseData.messages[0] || "Failed to refresh.");
+        const pinia = getActivePinia();
+        pinia._s.forEach((store) => store.$reset());
+        throw new Error("Failed to refresh.");
       }
-      this.token = response.headers.get("Authorization");
-      this.refreshToken = response.headers.get("Authorization-Refresh");
+      this.setAuth(response.headers);
     },
-    setUser(responseData, headers) {
+    setUser(responseData) {
       this.firstname = responseData.firstname;
       this.lastname = responseData.lastname;
       this.username = responseData.username;
       this.email = responseData.email;
       this.roles = responseData.roles;
       this.isLoggedIn = true;
+    },
+    setAuth(headers) {
       this.token = headers.get("Authorization");
       this.refreshToken = headers.get("Authorization-Refresh");
       this.expirationDate = new Date(+parseJwtExpiration(this.token) * 1000);
-      this.expiresIn = this.expirationDate.getTime() - new Date().getTime() - 3800;
-      setTimeout(async function () {
-        await this.refreshAccessToken();
-      }, this.expiresIn);
+      this.expiresIn = this.expirationDate.getTime() - new Date().getTime();
+      setTimeout(this.refreshAccessToken, this.expiresIn);
     }
   },
   persist: true
